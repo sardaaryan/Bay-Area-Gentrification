@@ -1,0 +1,69 @@
+\begin{center}
+\begin{ganttchart}[
+  hgrid,
+  vgrid,
+  time slot format=isodate,
+  time slot unit=day,
+  x unit=0.7cm,
+  y unit chart=1.0cm,
+  title/.style={draw=none, fill=gray!20},
+  title label font=\bfseries\footnotesize,
+  bar/.style={fill=blue!50},
+  bar label font=\small\color{black},
+  bar label node/.append style={align=center, text width=4.5cm},
+  bar height=0.6,
+]{2025-05-21}{2025-06-05}
+
+\gantttitle{Project Timeline}{16} \\
+\gantttitlecalendar{month=name, day=2} \\
+
+\ganttbar[
+  progress=100
+]{data preprocessing\\(Jacob)}{2025-05-21}{2025-05-23} \\
+
+\ganttbar[
+  progress=100
+]{progress report\\(Jacob)}{2025-05-23}{2025-05-26} \\
+
+\ganttbar[
+  progress=0
+]{video presentations\\(all)}{2025-06-02}{2025-06-05} \\
+
+\ganttbar[
+  progress=50
+]{timeline annotations\\(Jacob)}{2025-05-26}{2025-05-31} \\
+
+\ganttbar[
+  progress=25
+]{martini glass intro\\(Jacob)}{2025-05-26}{2025-06-01} \\
+
+\ganttbar[
+  progress=10
+]{bay area map \& interactivity\\(Aryan)}{2025-05-23}{2025-06-02}\\
+
+\ganttbar[
+  progress=0
+]{json county maps\\{Benicio}}{2025-05-23}{2025-05-28} \\
+
+\ganttbar[
+  progress=10
+]{county vis dashboard\\(Diane)}{2025-05-23}{2025-06-03} \\
+
+\ganttbar[
+  progress=20
+]{9 census tract heatmaps\\(Benicio)}{2025-05-23}{2025-06-03} \\
+
+\ganttbar[
+  progress=10
+]{2010-2023 timeline\\(Diane)}{2025-05-23}{2025-06-03} \\
+
+\ganttbar[
+  progress=0
+]{testing \& review\\(all)}{2025-06-03}{2025-06-04} \\
+
+\ganttbar[
+  progress=0
+]{final report\\(Jacob)}{2025-06-01}{2025-06-05} \\
+
+\end{ganttchart}
+\end{center}

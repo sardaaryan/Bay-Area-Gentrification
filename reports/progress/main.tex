@@ -3,12 +3,9 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
 \usepackage{pgfgantt}
-\usepackage{tikz}
-\usetikzlibrary{positioning}
-\usepackage{pgfkeys}
 \usepackage{xcolor}
 
-\title{The Gentrification of the San Francisco Bay Area: TEAM-17 Progress Report}
+\title{The Gentrification of the San Francisco Bay Area \\ \large TEAM-17 Progress Report}
 \author{Benicio Bailey, Jacob Feenstra, Diane Kim, Aryan Sarda}
 
 \begin{document}
@@ -20,6 +17,13 @@
 \item  Provide a detailed explanation of your current design (nearly done) and implementation (at least half done), covering both the visualization and storytelling aspects.
 \item  List any significant changes, design decisions, or improvements made since the proposal. Include figures or diagrams if they help clarify your method.
 \end{itemize}
+
+\input{fig}
+
+\begin{enumerate}
+\item Yep, this is happening.
+\item and so is this!
+\end{enumerate}
 
 \section{Evaluation Plan}
 
@@ -43,92 +47,7 @@
 % making a gantt chart
 The following Gantt chart illustrates the timeline of key project tasks:
 
-
-\begin{ganttchart}[
-    hgrid,
-    vgrid,
-    time slot format=isodate-yearmonth,
-    time slot unit=month,
-    title/.append style={draw=none, fill=gray!20},
-    title label font=\bfseries,
-    title label anchor/.style={},
-    bar height=0.6,
-    group right shift=0,
-    group top shift=0.7,
-    group height=.3,
-    group peaks height=.2,
-    bar label font=\small\bfseries,
-    bar label node/.append style={align=right}
-  ]{2025-06}{2025-12}
-
-  \end{ganttchart}
-
-
-\begin{center}
-
-\begin{ganttchart}[
-  hgrid,
-  vgrid,
-  time slot format=isodate,
-  time slot unit=day,
-  x unit=0.7cm,
-  y unit chart=0.8cm,
-  title/.style={draw=none, fill=gray!20},
-  title label font=\bfseries\footnotesize,
-  bar/.style={fill=blue!50},
-  bar label font=\small\color{black},
-  bar label node/.append style={align=center},
-  bar height=0.6,
-]{2025-05-21}{2025-06-05}
-
-\gantttitlecalendar{year, month=name, day=2} \\
-
-\ganttbar[
-  progress=100
-]{data preprocessing\\(Jacob)}{2025-05-21}{2025-05-22} \\
-
-\ganttbar[
-  progress=0
-]{video presentations\\(all)}{2025-06-02}{2025-06-05} \\
-
-\ganttbar[
-  bar label text={Timeline Annotations (Jacob)},
-  label text={Delivery}
-]{Delivery}{2025-06-05}{2025-06-05} \\
-
-\ganttbar[
-  bar label text={Martini Glass Introduction (Jacob)},
-  label text={Testing \& Review}
-]{Testing \& Review}{2025-06-03}{2025-06-04} \\
-
-\ganttbar[
-  bar label text={Bay Area 9-County Map (Aryan)},
-  label text={Testing \& Review}
-]{Testing \& Review}{2025-06-03}{2025-06-04} \\
-
-\ganttbar[
-  progress=120
-]{json county maps\\{Benicio}}{2025-06-03}{2025-06-04} \\
-
-\ganttbar[
-  progress=10
-]{county vis dashboard\\{Diane}}{2025-05-23}{2025-05-26} \\
-
-\ganttbar[
-  progress=20
-]{9 census tract heatmaps\\(Benicio)}{2025-05-23}{2025-05-30} \\
-
-\ganttbar[
-  bar label text={2010-2023 Timeline (Diane)},
-  label text={Testing \& Review}
-]{Testing \& Review}{2025-06-03}{2025-06-04} \\
-
-\end{ganttchart}
-
-
-
-
-
+\input{gantt}
 
 
 \section{Team's Effort Division}
