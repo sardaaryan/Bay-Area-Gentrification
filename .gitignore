@@ -1,2 +1,7 @@
 # don't track csv data
 data/
+
+# don't track latex pdfs, logs, or auxiliary files
+*.pdf
+*.log
+*.aux
