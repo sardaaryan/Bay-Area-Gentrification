@@ -1,0 +1,35 @@
+body {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0 1rem;
+  background-color: #fefefe;
+}
+
+main {
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem 0;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.continue-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.continue-button {
+  background-color: #007acc;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.1rem;
+}
+
+.continue-button:hover {
+  background-color: #005f99;
+}
