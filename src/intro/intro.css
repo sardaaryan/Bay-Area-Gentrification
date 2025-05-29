@@ -1,0 +1,93 @@
+.banner {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  border-bottom: 4px solid #b7410e;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.75);
+}
+
+.banner-text {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+}
+
+.banner-text h1 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.banner-text p {
+  font-size: 1.2rem;
+  margin-top: 0.3em;
+}
+
+figure {
+  text-align: center;
+  margin: 2em 0;
+}
+
+figcaption {
+  font-size: 0.9em;
+  font-style: italic;
+  color: #555;
+  margin-top: 0.5em;
+}
+
+.img-small {
+  max-width: 300px;
+}
+
+.img-medium {
+  max-width: 600px;
+}
+
+.img-large {
+  max-width: 900px;
+}
+
+.gentrification-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem auto;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.gentrification-table caption {
+  caption-side: top;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  color: #b7410e;
+}
+
+.gentrification-table th,
+.gentrification-table td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.gentrification-table thead {
+  background-color: #efeff5;
+  color: #0c3c60;
+}
+
+.gentrification-table td em {
+  font-style: italic;
+  font-weight: bold;
+  color: #b7410e;
+}

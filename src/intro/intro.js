@@ -1,5 +1,11 @@
 // load in the introductory script
 document.addEventListener('DOMContentLoaded', () => {
+  // append CSS for article
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'intro/intro.css';
+  document.head.appendChild(link);
+
   fetch('intro/intro.html')
     .then(response => response.text())
     .then(html => {
