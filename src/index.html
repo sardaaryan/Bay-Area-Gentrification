@@ -1,23 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Article Preface</title>
+  <title>California Counties Map</title>
+
+  <!-- Fonts and Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Scripts -->
   <script defer src="intro/intro.js"></script>
+  <!-- MOVE TO VIS.HTML? -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <script src="main.js"></script>
+  <!-- ** -->
+
   <!-- MathJax for inline math rendering -->
   <script type="text/javascript" id="MathJax-script" async
     src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>
 </head>
+
 <body>
+  <!-- Load in article.html -->
   <main id="article-container">
-    <!-- Article will be loaded here -->
   </main>
 
+  <!-- continue to D3 visualization -->
   <div class="continue-container">
     <a href="vis.html" class="continue-button">Continue to Visualizations</a>
   </div>
+
+  <!-- D3 Visualization Element -->
+  <!-- MOVE TO VIS.HTML? **-->
+  <section id="vis">
+    <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="tooltip" id="tooltip" style="opacity: 0"></div>
+  </section>
+  <!-- ** -->>
 </body>
+
 </html>
