@@ -8,3 +8,6 @@ data/
 *.out
 *.bbl
 *.blg
+
+# ignore all image directories
+*imgs/
