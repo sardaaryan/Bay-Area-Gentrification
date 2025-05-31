@@ -1,0 +1,195 @@
+<link rel="stylesheet" href="intro/intro.css">
+
+<header class="banner">
+  <img src="intro/imgs/golden-gate.jpeg" alt="Golden Gate Bridge" class="banner-image">
+  <div class="banner-text">
+    <h1>The Bay Area Gentrification Crisis</h1>
+    <p>How the San Francisco Bay Area became the most expensive region in the United States</p>
+  </div>
+</header>
+
+<article>
+
+  <h2>The Problem</h2>
+
+  <p>
+    The San Francisco Bay Area is a vibrant region of our great country, and one of the most economically fertile
+    metropolitan areas in the entire world. It is also the source of arguably the worst gentrification and housing
+    shortage in the United States of America, outstripping even places such as Manhattan and Los Angeles, in
+    housing costs and socioeconomic disparity.
+  </p>
+
+  <p>
+    Gentrification is complex, and while there is no scholarly consensus on it’s exact definition, it is generally
+    understood as the process of wealthier individuals moving into lower-income neighborhoods, causing
+    displacement of local residents, increased property value, costlier rents, and a shift in community culture.
+    Indelibly, this leads to a housing shortage, as the cost of buying a home becomes too unaffordable for median
+    income buyers. In the case of the Bay Area, this shortage is vast. The presence of these phenomena in the
+    bay have a shared cause: Silicon Valley.
+  </p>
+
+  <figure>
+    <img src="intro/imgs/sv-map.jpg" alt="Map of Silicon Valley" class="img-large" />
+    <figcaption>Many of the world's Fortune 500s are right here in the bay, which means a plethora of high-income jobs.</figcaption>
+  </figure>
+
+  <p>
+    Technological innovation around the world, and the computer science industry at large, can be traced
+    back to Silicon Valley in the Bay Area. Indeed, it is still the greatest tech hub in the world. Although this
+    is a source of great pride, it is also the predominant cause of gentrification in the Bay Area, as highly paid
+    engineers oust the local residents from the market. As such, as of 2025, it is the most expensive place to live
+    in the United States.
+  </p>
+  
+  <figure>
+    <img src="intro/imgs/sf-tents.jpg" alt="Unhoused Tent City in SF" class="img-medium" />
+    <figcaption>
+            While not touched on in the visualization, gentrification leads to housing crisis, which exacerbates 
+            the homelessness epidemic in California at-large. Large tent encampments, like the one pictured here, are
+            a common sight throughout the Bay Area.
+    </figcaption>
+  </figure>
+
+  <p>
+    This is a significant problem that has its roots in the mid-90s, as Silicon Valley began to situate itself in San Jose.
+    This visualization focuses on contemporary gentrification, from the year 2010 to the year 2023.
+  </p>
+
+  <h2>Measuring Gentrification</h2>
+
+  <p>
+    Measuring gentrification is complicated. <a href="https://www.huduser.gov/portal/periodicals/cityscape/vol26num1/ch20.pdf">This article</a>
+    operationalizes how to measures gentrification into 5 attributes, which have been acquired from the 2010-2023 American Community Survey (ACS).
+    The 5 attributes, and how to calculate gentrification with them, is tabulated below:
+  </p>
+
+  <table class="gentrification-table">
+    <caption>Gentrification Criteria to Quantify Tracts</caption>
+    <thead>
+      <tr>
+        <th>ACS Variable</th>
+        <th>Criteria for Gentrification</th>
+        <th>Census Variable Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Median household income</td>
+        <td>
+          If the tract's percentage increase is <em>above</em> the county's percentage increase.
+        </td>
+        <td>S1901</td>
+      </tr>
+      <tr>
+        <td>Median home value</td>
+        <td>If a tract’s percentage increase for home value is <em>higher</em> than the countywide median percentage increase in home value.</td>
+        <td>S2506</td>
+      </tr>
+      <tr>
+        <td>Gross rent</td>
+        <td>If a tract’s percentage is <em>higher</em> than the countywide percentage increase in rent cost.</td>
+        <td>B25064</td>
+      </tr>
+      <tr>
+        <td>Occupancy Rate</td>
+        <td>If the percentage decrease is <em>above</em> the county's percentage decrease.</td>
+        <td>B25002</td>
+      </tr>
+      <tr>
+        <td>Educational attainment</td>
+        <td>Percentage increase in college educated residents is <em>above</em> the countywide percentage increase in college educated residents.</td>
+        <td>S1501</td>
+      </tr>
+    </tbody>
+  </table>
+
+    A few tweaks have been incorporated for measurement of this criteria:
+  <ul>
+    <li>Percentage change is compared on a year-to-year basis for each attribute.</li>
+    <li>The gentrification criteria in the article performs this logic on a citywide basis. We've elected to do countywide for simpler JSON representation.</li>
+    <li>Gentrification is not <em>heterogeneous</em> in our visualization. For the heatmap, levels of gentrification is mapped to a color gradient based on a baseline.</li>
+  </ul>
+
+  <p>
+    And thus we arrive at a formula for computing a "coefficient of gentrification" for a given year, to allow the heatmap to really shine. A tract is considered gentrified for the year if:
+  </p>
+
+  <ol>
+
+    <li>
+    \(\forall X_n \text{, where} ~ n = {1, 2, 3, 4, 5}\)
+    </li>
+
+    <li>
+    \( X_n \) corresponds to attribute n for the census tract for the given year
+    </li>
+
+    <li>
+    \(x_n\) corresponds to attribute n for the census tract for the previous year
+    </li>
+
+    <li>
+      \( \overline{X}_n\) is the county average for attribute n in the current year 
+    </li>
+
+    <li>
+    \(\overline{x}_n\) is the county average for attribute n in the previous year
+    </li>
+
+    <li>
+    \( G_n = \frac{X_n}{x_n} \)
+    </li>
+
+    <li>
+    \( \overline{G}_n = \frac{\overline{X}_n}{\overline{x}_n} \)
+    </li>
+
+    <li>
+    \( \text{if} ~ \frac{G_n}{\overline{G}_n} > 1 ~ \text{, then n is a gentrifiable attribute for the census tract} \)
+    </li>
+
+    <li>
+    \( \text{The census tract is gentrifiable if and only if all n attributes are gentrifiable} \)
+    </li>
+
+    <li>
+      The measure of gentrification can be determined as the average of gentrifying attributes, or \( M = \frac{\Sigma_{i = 1}^n~\frac{G_i}{\overline{G}_i}}{5} \). This holds <em>only</em> if all attributes are gentrifying by the above steps.
+    </li>
+
+  </ol>
+
+  <p>
+    Note this is slightly different for educational attainment, which is a decrease in percentage, 
+    so this attribute \(n\) is a gentrifying attribute if \( \frac{G_n}{\overline{G}_n} < 1 \)
+  </p>
+
+  <p>
+    The year 2010 is our baseline, which means it will not have any measured gentrification.
+    You are encouraged to start at this year for a county, and see how it changes over time into the year 2023.
+    The value M thus measures the intensity of gentrification, which is mapped to the colorscale, but only if all 5
+    attributes are gentrifiying. By removing the binary label of "gentrified" or "non-gentrified", the hope is to indicate
+    socioeconomic disparity at a higher granularity.
+  </p>
+
+  <p>
+    A 6th attribute, population, is also measured across census tracts. While it does not correlate to gentrification, it
+    does loosely correlate to residential displacement, which is a typical side-affect of a gentrifying neighborhood.
+  </p>
+
+  <h2>How To Navigate?</h2>
+
+  <p>
+    Click on counties to visit them, then scroll on the timeline bar to see how census tracts change overtime. 
+    Hover over a census tract to focus on how it has changed over the years, as well as viewing the attributes
+    for the given year. And that is it! The details will be expressed in the visualization.
+  </p>
+
+  <p>
+    Ready to get started?
+  </p>
+
+  <figure>
+    <img src="intro/imgs/victorian.jpg" alt="Historical SF Houses" class="img-medium" />
+  </figure>
+
+</article>

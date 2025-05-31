@@ -1,15 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>California Counties Map</title>
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://unpkg.com/topojson@3"></script>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
-    <div class="tooltip" id="tooltip" style="opacity: 0"></div>
-    <script src="main.js"></script>
-  </body>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>California Counties Map</title>
+
+  <!-- Fonts and Styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Scripts -->
+  <script defer src="intro/intro.js"></script>
+
+  <!-- MathJax for inline math rendering -->
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+</head>
+
+<body>
+  <!-- Load in article.html -->
+  <main id="article-container">
+  </main>
+
+  <!-- continue to D3 visualization -->
+  <div class="continue-container">
+    <a href="vis/vis.html" class="continue-button">Continue to Visualizations</a>
+  </div>
+</body>
+
 </html>

@@ -46,7 +46,7 @@ callout = (g, value) => {
   path.attr("d", `M${-w / 2 - 10},5H-5l5,-5l5,5H${w / 2 + 10}v${h + 20}h-${w + 20}z`);
 };
 
-d3.json("./data/filtered-counties.topo.json").then((topoData) => {
+d3.json("../data/filtered-counties.topo.json").then((topoData) => {
   // Convert TopoJSON to GeoJSON FeatureCollection
   const counties = topojson.feature(topoData, topoData.objects.counties || Object.values(topoData.objects)[0]);
 
