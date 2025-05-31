@@ -1,0 +1,8 @@
+svg{
+    width: 100vw;
+    height: 98vh;
+}
+
+body{
+    overflow: hidden !important;
+}
