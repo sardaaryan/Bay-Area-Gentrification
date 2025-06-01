@@ -148,27 +148,53 @@
     \( \text{if} ~ \frac{G_n}{\overline{G}_n} > 1 ~ \text{, then n is a gentrifiable attribute for the census tract} \)
     </li>
 
+    
     <li>
-    \( \text{The census tract is gentrifiable if and only if all n attributes are gentrifiable} \)
+      Note this is slightly different for educational attainment, which is a decrease in percentage, 
+      so this attribute \(n\) is a gentrifying attribute if \( \frac{G_n}{\overline{G}_n} < 1 \)
     </li>
 
     <li>
-      The measure of gentrification can be determined as the average of gentrifying attributes, or \( M = \frac{\Sigma_{i = 1}^n~\frac{G_i}{\overline{G}_i}}{5} \). This holds <em>only</em> if all attributes are gentrifying by the above steps.
+      To make educational attainment compatible, a logarithm is used on fractional values to normalize
+      the scale. To keep all values positive, the logarithm for educational attainment is flipped, since
+      \( - \log (\frac{G_n}{\overline{G}_n} ) \) = \( \log ( \frac{\overline{G}_n}{G_n} ) \). Otherwise
+      educaional attainment would be negative for the formula below.
     </li>
 
+    <li>
+      The measure of gentrification can thus be determined as the average <em> of the log </em> of 
+      gentrifying attributes, \(M\), where 
+      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(\frac{G_n}{\overline{G}_n}) \). 
+      So the more attributes that are gentrifiable, the greater the gentrification measurement of the 
+      tract, and educational attainment is accounted for (while also suppressing significant outliers).
+    </li>
+
+    <li>
+      The final, simpler form of the equation becomes 
+      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(G_n) - \log(\overline{G}_n) \).
+      And educational attainment is \( \log(\overline{G}_n) - \log(G_n) \)
+    </li>
+
+    <li>
+       If \( M \leq 0 \), then the census tract has not experienced any gentrification, with \( M = 0 \) signifying the threshold. If \( M \ge 0 \), then it is gentrifying.
+    </li>
+
+    <li>
+      \( M \leq 0 \) maps to a white color, indicating no gentrification at all. \( M \ge 0 \) will 
+      be a color-spectrum from white to red, with the color red being the highest value recorded for 
+      \(M\); this is the most gentrifying census tract in the county for the given year.
+    </li>
   </ol>
-
-  <p>
-    Note this is slightly different for educational attainment, which is a decrease in percentage, 
-    so this attribute \(n\) is a gentrifying attribute if \( \frac{G_n}{\overline{G}_n} < 1 \)
-  </p>
 
   <p>
     The year 2010 is our baseline, which means it will not have any measured gentrification.
     You are encouraged to start at this year for a county, and see how it changes over time into the year 2023.
-    The value M thus measures the intensity of gentrification, which is mapped to the colorscale, but only if all 5
-    attributes are gentrifiying. By removing the binary label of "gentrified" or "non-gentrified", the hope is to indicate
-    socioeconomic disparity at a higher granularity.
+    The value M thus measures the intensity of gentrification, which is mapped to the colorscale.
+    By quantifying gentrification with the heatmap, the hope is to indicate socioeconomic disparity 
+    at a higher granularity. How much gentrification has occurred will be indicated year-to-year, whether or not
+    the tract is currently suffering from gentrification or not. Red indicates gentrification has "worsened" from the
+    previous year; it is not an absolute measurement of gentrification from 2010-2023.
+
   </p>
 
   <p>
@@ -181,7 +207,7 @@
   <p>
     Click on counties to visit them, then scroll on the timeline bar to see how census tracts change overtime. 
     Hover over a census tract to focus on how it has changed over the years, as well as viewing the attributes
-    for the given year. And that is it! The details will be expressed in the visualization.
+    for the given year. And that is it! The finer details for interaction will be expressed in the visualization.
   </p>
 
   <p>

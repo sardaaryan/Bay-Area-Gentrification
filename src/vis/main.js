@@ -1,3 +1,4 @@
+
 // Constants
 const width = 960, height = 600;
 const bayAreaCountyIDs = [6001, 6013, 6041, 6055, 6075, 6081, 6085, 6095, 6097];
@@ -43,6 +44,7 @@ function callout(g, value){
     .attr("y", -boxHeight / 2 + 5)
     .style("font-weight", "bold")
     .text(value);
+
 };
 
 d3.json("../data/filtered-counties.topo.json").then((topoData) => {
