@@ -70,11 +70,10 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
       const [x, y] = d3.mouse(this);
 
       // call the tooltip
-      // the .call is used to display what to see when the mouse goes over a state, in this case the name
       tooltip.attr("transform", `translate(${x},${y})`).call(callout, `${name} County`);
     }).on('click', function(d) {
         const name = d.properties.name;
-        window.open(`../county/county.html?${name}`, "_self"); // Opens newpage.html in a new tab/window
+        window.open(`../county/county.html?${name}`, "_self"); // Opens county.html and queries county name
     });
 
   const tooltip = svg.append("g");
