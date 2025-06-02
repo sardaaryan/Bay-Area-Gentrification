@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gentrification Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Left: Heatmap + Slider -->
+        <div class="left">
+          <div class="heatmap-placeholder">
+            <p>Heatmap loading...</p>
+          </div>
+
+          <!-- Slider below heatmap -->
+          <div class="slider-container">
+            <label for="timeline-slider">YEAR:</label>
+            <input type="range" id="timeline-slider" min="2010" max="2023" value="2010" step="1" />
+            <span id="selected-year">2010</span>
+          </div>
+        </div>
+
+    <!-- Right: 3 visualizations -->
+    <div class="right">
+      <!-- Timeline annotations -->
+      <section class="annotations" id="timeline-section">
+        <h2>Timeline Annotations</h2>
+        <div id="timeline-annotations"></div>
+      </section>
+
+      <!-- Stream graph -->
+      <section class="streamgraph" id="streamgraph-section">
+        <h2>Stream Graph</h2>
+        <div id="streamgraph-container"></div>
+        <div id="legend-container"></div>
+        <label for="tract-select">Select Census Tract:</label>
+        <select id="tract-select"></select>
+      </section>
+      
+      <!-- Comparative bar chart -->
+      <section class="barchart" id="barchart-section">
+        <h2>Comparative Bar Chart</h2>
+        <div id="barchart-container"></div>
+      </section>
+    </div>
+
+  <script src="data/sdata.js"></script>
+  <script src="js/annotations.js"></script>
+  <script src="js/barChart.js"></script>
+  <script src="js/streamGraph.js"></script>
+</body>
+</html>
