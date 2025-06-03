@@ -6,7 +6,7 @@ def clean_and_process_median_income_data(start_year=2010, end_year=2023, output_
     """
     Cleans and processes ACS median household income data for Bay Area census tracts.
     Handles multiple yearly CSV files, cleans Geographic Area Name, adds Year,
-    and aggregates data for split census tracts by taking the AVERAGE of the Median Value.
+    and extracts specific median home value data without aggregating split census tracts.
 
     Args:
         start_year (int): The starting year for the data files (e.g., 2010).
@@ -17,69 +17,78 @@ def clean_and_process_median_income_data(start_year=2010, end_year=2023, output_
 
     all_years_data = []
 
-    # The column containing the median value
-    MEDIAN_VALUE_COL = "Median Value"
+    # The column containing the raw median value from the ACS file
+    RAW_MEDIAN_VALUE_COL = "S2506_C01_009E"
+    # The desired name for the median value column in the output
+    FINAL_MEDIAN_VALUE_COL = "Median_Home_Value"
+    # The column containing the geographic area name
+    GEOGRAPHIC_AREA_NAME_COL = "NAME"
+
 
     for year in range(start_year, end_year + 1):
-        # Construct the specific file name for median income data
-        # Assuming format is 2010.csv, 2011.csv etc.
-        file_name = f"{year}.csv"
+        # Construct the specific file name for ACS median income data
+        file_name = f"ACSST5Y{year}.S2506-Data.csv"
         print(f"Processing {file_name} for year {year}...")
 
         if not os.path.exists(file_name):
             print(f"Warning: {file_name} not found. Skipping this year.")
             continue
 
-        # Read the CSV. The header is the first row.
-        df = pd.read_csv(file_name)
+        # Read the CSV. We don't specify header, so it reads everything as data.
+        df = pd.read_csv(file_name, header=None)
 
-        # 1) Drop "Geography" variables (if present)
-        if 'Geography' in df.columns:
-            df = df.drop(columns=['Geography'])
-        
-        # Ensure the 'Median Value' column is numeric, fill non-numeric with 0
-        if MEDIAN_VALUE_COL in df.columns:
-            df[MEDIAN_VALUE_COL] = pd.to_numeric(df[MEDIAN_VALUE_COL], errors='coerce').fillna(0)
+        # The first row (index 0) contains the actual column names (e.g., S2506_C01_009E)
+        df.columns = df.iloc[0]
+        # Drop the first two rows (which were the original headers)
+        df = df[2:].reset_index(drop=True)
+
+        # Ensure the 'NAME' column exists (which is the Geographic Area Name)
+        if GEOGRAPHIC_AREA_NAME_COL not in df.columns:
+            print(f"Error: '{GEOGRAPHIC_AREA_NAME_COL}' column not found in {file_name}. Skipping this file.")
+            continue
+
+        # Ensure the raw median value column exists and is numeric
+        if RAW_MEDIAN_VALUE_COL in df.columns:
+            # Convert to numeric, coercing errors (e.g., 'N' or '-') to NaN, then fill NaN with 0
+            # Replace '1,000,000+' with a large numerical value like 1000000
+            df[RAW_MEDIAN_VALUE_COL] = df[RAW_MEDIAN_VALUE_COL].replace('1,000,000+', '1000000', regex=False)
+            # Remove commas from numbers like '1,000,000'
+            df[RAW_MEDIAN_VALUE_COL] = df[RAW_MEDIAN_VALUE_COL].replace(',', '', regex=True)
+            df[RAW_MEDIAN_VALUE_COL] = pd.to_numeric(df[RAW_MEDIAN_VALUE_COL], errors='coerce').fillna(0)
         else:
-            print(f"  Error: '{MEDIAN_VALUE_COL}' column not found in {file_name}. Skipping this file.")
-            continue # Skip to the next file if the critical column is missing
+            print(f"Error: '{RAW_MEDIAN_VALUE_COL}' column not found in {file_name}. Skipping this file.")
+            continue
 
-        # 2) Turn "Geographic Area Name" into "Tract ID", "County", "State"
+        # 1) Drop "Geography" variables (if present).
+        # We now use 'NAME' for geographic info. 'GEO_ID' can be dropped if not needed later.
+        if 'GEO_ID' in df.columns:
+            df = df.drop(columns=['GEO_ID'])
+
+        # 2) Turn "Geographic Area Name" (now 'NAME') into "Tract ID", "County"
         # Handles both comma and semicolon delimiters
-        split_data = df['Geographic Area Name'].str.split(r'[,;]', expand=True)
+        split_data = df[GEOGRAPHIC_AREA_NAME_COL].str.split(r'[,;]', expand=True)
         
+        # 'Census Tract XXXXX, YYYYY County, ZZZZZ'
         df['Tract ID Raw'] = split_data[0].str.strip()
-        df['County Raw'] = split_data[1].str.strip()
+        df['County Raw'] = split_data[1].str.strip() if 1 in split_data.columns else None
         # State will be at index 2 if present; handle cases where it might not be explicitly there
-        df['State Raw'] = split_data[2].str.strip() if 2 in split_data.columns else None
+        # We don't need 'State Raw' as per previous instruction.
 
-        # 3) Drop state - it's redundant for Bay Area data
-        if 'State Raw' in df.columns:
-            df = df.drop(columns=['State Raw'])
-
-        # 4) Format Tract ID (remove "Census Tract ")
+        # 3) Format Tract ID (remove "Census Tract ")
         df['Tract ID'] = df['Tract ID Raw'].str.replace('Census Tract ', '', regex=False)
 
-        # 5) Format County (remove " County") and fill any NaNs with empty string
+        # 4) Format County (remove " County") and fill any NaNs with empty string
         df['County'] = df['County Raw'].str.replace(' County', '', regex=False).fillna('')
 
         # Add the "Year" variable
         df['Year'] = year
 
-        # Create 'Base Tract ID' for aggregation, handling split tracts (e.g., 123.01 -> 123)
-        df['Base Tract ID'] = df['Tract ID'].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
-
-        # Define the columns for grouping (Base Tract ID, County, Year)
-        group_cols = ['Base Tract ID', 'County', 'Year']
-
-        # Perform aggregation for the Median Value: take the average
-        # This will calculate the average of the Median Value for all sub-tracts
-        # belonging to the same Base Tract ID.
-        grouped_data = df.groupby(group_cols)[MEDIAN_VALUE_COL].mean().reset_index()
-
-        # Rename 'Base Tract ID' back to 'Tract ID' for consistency in the final output
-        grouped_data = grouped_data.rename(columns={'Base Tract ID': 'Tract ID'})
-        all_years_data.append(grouped_data)
+        # Select only the relevant columns for the final output
+        # Keep all unique Tract IDs and do not aggregate
+        processed_df = df[['Tract ID', 'County', RAW_MEDIAN_VALUE_COL, 'Year']].copy()
+        processed_df = processed_df.rename(columns={RAW_MEDIAN_VALUE_COL: FINAL_MEDIAN_VALUE_COL})
+        
+        all_years_data.append(processed_df)
 
     if not all_years_data:
         print("No data processed. Exiting.")
@@ -89,16 +98,16 @@ def clean_and_process_median_income_data(start_year=2010, end_year=2023, output_
     final_df = pd.concat(all_years_data, ignore_index=True)
 
     # Define the final desired column order for the output CSV
-    final_columns_order = ['Tract ID', 'County', MEDIAN_VALUE_COL, 'Year']
+    final_columns_order = ['Tract ID', 'County', FINAL_MEDIAN_VALUE_COL, 'Year']
     # Select and reorder columns
     final_df = final_df[final_columns_order]
 
     # Save the combined DataFrame to the specified output filename
     final_df.to_csv(output_filename, index=False)
-    print(f"\nSuccessfully processed and combined median income data into {output_filename}")
+    print(f"\nSuccessfully processed and combined median home value data into {output_filename}")
     print(f"Final output shape: {final_df.shape}")
 
 # --- Main execution block ---
 if __name__ == "__main__":
-    print("Starting data processing for Median Household Income (using average for split tracts)...\n")
+    print("Starting data processing for Median Home Value (keeping all unique tract IDs)...\n")
     clean_and_process_median_income_data()
