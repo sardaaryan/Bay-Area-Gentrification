@@ -29,7 +29,19 @@ The repository consists of the following components:
 </details>
 
 - `map_preprocess/`: this folder contains preprocessing logic used to get the topo.json files to the form currently seen (to draw their SVG's).
-- `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports from these parent subdirectories, using whichever command-line approach you desire. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
+
+- `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports with the following steps:
+
+<details>
+<summary>compiling a LaTeX report</summary>
+
+  1. Navigate to the given parent subdirectory (`proposal/` for the proposal report, and so on) 
+  2. Use [this Dropbox link](https://www.dropbox.com/scl/fi/1mdkwptqvdwjf6t91ekvv/imgs.zip?rlkey=94rwuuueltidle266ql889hvw&st=52qckpk2&dl=1) to download `imgs.zip` immediately. Make sure it is unzipped in `reports/`, not the parent subdirectory. Do not change it's name or contents. This only needs to be done once for all reports!
+  3. Use whichever approach you desire to compile main.tex. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
+  4. Apply these steps to any of LaTeX reports.
+
+</details>
+
 - `src/` contains all of the code of our implementation. We break down it's structure next.
     - (NEED TO FINISH `src/`!!) <- this will be pretty long
  
@@ -41,6 +53,7 @@ We walk through installation steps here to prepare for execution.
 
 1. Click on [this Dropbox link](https://www.dropbox.com/scl/fi/h2ky862f5y9yq2zwgew4w/data.zip?rlkey=zhbe790l07ystgk4p6me7lczn&st=pv9jsdub&dl=1) and a zipped, preprocessed dataset titled `data/` will immediately download.
 2. Unzip, and do not change the name of the directory, nor it's contents. Make sure it is positioned inside `src/` (it's exact position should be `src/data/`), with the rest of the source code.
+3. Lastly, to get the images in the introductory article of our visualization, use [this Dropbox link](https://www.dropbox.com/scl/fi/gfk7ziromvf75umgpf5di/imgs.zip?rlkey=e1rrilxave84mpmudirwx19zt&st=akqmaytk&dl=1) to download imgs.zip immediately. Make sure it is unzipped in `src/intro/`. Do not change it's name or contents.
 3. The project is ready to be executed!
 
 The zipfile contains the 6 preprocessed CSV files which the visualization uses, a `tracts/` folder containing 9 topo.json files (each one corresponds to 1 of the 9 Bay Area counties, illustrating their census tracts), and a `filtered-counties.topo.json`, which is the overview of the 9 counties of the San Francisco Bay Area (without census tracts). 
@@ -50,5 +63,6 @@ The zipfile contains the 6 preprocessed CSV files which the visualization uses, 
 1. Run any local development server of your choice. We have enjoyed using `live-server` on the command line, but conceivably any similar service should work. If not, we recommend `live-server`. Make sure you have run it in the `src/` directory.
 2. The visualization has begun! Enjoy 🙂
 
-
+<div style="border-left: 4px solid #ffa500; padding: 0.5em; background: #fff8e1;">
 This project has been a collaborative effort by Jacob Feenstra ([`jdfeenstra@ucdavis.edu`](jdfeenstra@ucdavis.edu)), Aryan Sarda ([`arsarda@ucdavis.edu`](arsarda@ucdavis.edu)), Diane Kim ([`dnekim@ucdavis.edu`](dnekim@ucdavis.edu)), and Benicio Bailey ([`bkbailey@ucdavis.edu`](bkbailey@ucdavis.edu))
+</div>
