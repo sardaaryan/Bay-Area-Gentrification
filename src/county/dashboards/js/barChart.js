@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Load data from external CSV file
     d3.csv("data/data.csv", d3.autoType).then(csvData => {
       data = csvData;
-      update(+document.getElementById("timeline-slider").value);
+      update(+document.getElementById("yearSlider").value);
     }).catch(error => {
       console.error("Error loading CSV data:", error);
     });
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     // Hook slider:
-    const slider = document.getElementById("timeline-slider");
+    const slider = document.getElementById("yearSlider");
     const yearLabel = document.getElementById("selected-year");
     slider.addEventListener("input", e => {
       const year = +e.target.value;

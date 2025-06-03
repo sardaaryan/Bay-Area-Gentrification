@@ -30,6 +30,21 @@ body {
   margin-top: 5px;
 }
 
+/* Slider Styling*/
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 10px 10px;
+  background: #f0f4f0; /* light greenish background */
+  border: 1px solid #c8dbbf; /* soft green border */
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  font-family: Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
 /* Right Section: 40% width */
 .right {
   width: 40%;

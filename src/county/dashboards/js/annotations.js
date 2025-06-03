@@ -18,7 +18,7 @@ const annotationData = {
 
   
   // Elements
-  const slider = document.getElementById("timeline-slider");
+  const slider = document.getElementById("yearSlider");
   const yearLabel = document.getElementById("selected-year");
   const annotationBox = document.getElementById("timeline-annotations");
   
