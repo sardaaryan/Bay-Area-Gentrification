@@ -26,7 +26,7 @@ const attributeFiles = [
   { file: "../data/total_pop.csv", column: "Estimate!!Total" },
 ];
 
-const occFile = "../data/occ_status.csv"; // has: Total Housing Units, Vacant Units
+const occFile = "../data/vac_status.csv"; // has: Total Housing Units, Vacant Units
 const filteredData = new Map(); // key = TractID_Year
 
 //HELPER FUNCTIONS
@@ -36,14 +36,21 @@ function updateyearData() {
 }
 
 function updateTractTimeSeries(tractID) {
-  tractTimeSeries = data
+  tractData = data
     .filter(d => d["Tract ID"] === tractID)
     .sort((a, b) => +a.Year - +b.Year);
-  console.log(tractTimeSeries);
+  //Debug: console.log(tractID, tractData);
+}
+
+function preprocessTractID(id){
+    if(id.length == 3) return '0'+id+'00';
+    if(id.length == 4) return id+'00';
+    if(id.length == 5) return '0'+id;
+    return id.replace(".", "");
 }
 
 // Load and merge all CSVs
-Promise.all([...attributeFiles.map((d) => d3.csv(d.file)), d3.csv(occFile)]).then(([edu, rent, homeVal, income, totalPop, occStatus]) => {
+Promise.all([...attributeFiles.map((d) => d3.csv(d.file)), d3.csv(occFile)]).then(([edu, rent, homeVal, income, totalPop, vacStatus]) => {
   const datasets = [edu, rent, homeVal, income, totalPop];
   const keys = attributeFiles.map((d) => d.column);
 
@@ -54,7 +61,7 @@ Promise.all([...attributeFiles.map((d) => d3.csv(d.file)), d3.csv(occFile)]).the
         const key = `${d["Tract ID"]}_${d["Year"]}`;
         if (!filteredData.has(key)) {
           filteredData.set(key, {
-            "Tract ID": d["Tract ID"],
+            "Tract ID": preprocessTractID(d["Tract ID"].replace(".", "")),
             Year: d["Year"],
           });
         }
@@ -64,19 +71,17 @@ Promise.all([...attributeFiles.map((d) => d3.csv(d.file)), d3.csv(occFile)]).the
   });
 
   // Merge occ_status (multiple columns)
-  occStatus.forEach((d) => {
+  vacStatus.forEach((d) => {
     if (d.County === county) {
       const key = `${d["Tract ID"]}_${d["Year"]}`;
       if (!filteredData.has(key)) {
         filteredData.set(key, {
-          "Tract ID": d["Tract ID"],
+          "Tract ID": preprocessTractID(d["Tract ID"].replace(".", "")),
           Year: d["Year"],
         });
       }
       const entry = filteredData.get(key);
-      entry["Total Housing Units"] = d["Total Housing Units"];
       entry["Vacant Units"] = d["Vacant Units"];
-      entry["Occupied Units"] = (+d["Total Housing Units"] || 0) - (+d["Vacant Units"] || 0);
     }
   });
 
@@ -106,19 +111,25 @@ function init() {
     projection.fitSize([width, height], tracts);
     
     tracts.features.sort((a, b) => +a.properties.id - +b.properties.id);
-    console.log(tracts);
+
+    //Debug: //Debug: console.log(tracts);
+
     // Draw counties
     svg.selectAll("path").data(tracts.features).enter().append("path").attr("d", path).attr("fill", "#69b3a2").attr("stroke", "#fff")
         .attr("stroke-width", 0.5)
         .on('click', function(d) {
-            updateTractTimeSeries(d.properties.id.substr(5, 4))
+            const id = d.properties.id.substr(5).trim();
+            updateTractTimeSeries(id);
+            console.log(tractData);
         });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
   });
 }
 
-yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); console.log(year, yearData);};
+yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
+
+
 //calculate gentrification for current year
 //using the function genScore() from heatmap.js
 //color regions
