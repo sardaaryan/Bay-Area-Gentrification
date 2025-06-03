@@ -14,9 +14,9 @@ const countyids = {
     "Sonoma":"06097"    
 };
 
-let data = []; //data has all data for current county
-let yearData = []; //data for heat map filtered to current year on year slider
-
+let data = []; //data has all data for current county across all years
+let yearData = []; //data filtered to current year on year slider
+let tractData = []; //data filtered to specific tract based on heatmap click
 
 const attributeFiles = [
   { file: "../data/edu_attain.csv", column: "25_Plus_Bachelors_Degree_Or_Higher_Count" },
@@ -33,6 +33,13 @@ const filteredData = new Map(); // key = TractID_Year
 
 function updateyearData() {
   yearData = data.filter((d) => d.Year === year);
+}
+
+function updateTractTimeSeries(tractID) {
+  tractTimeSeries = data
+    .filter(d => d["Tract ID"] === tractID)
+    .sort((a, b) => +a.Year - +b.Year);
+  console.log(tractTimeSeries);
 }
 
 // Load and merge all CSVs
@@ -97,9 +104,15 @@ function init() {
     const tracts = topojson.feature(topoData, topoData.objects.tracts || Object.values(topoData.objects)[0]);
     // Fit projection to features
     projection.fitSize([width, height], tracts);
-
+    
+    tracts.features.sort((a, b) => +a.properties.id - +b.properties.id);
+    console.log(tracts);
     // Draw counties
-    svg.selectAll("path").data(tracts.features).enter().append("path").attr("d", path).attr("fill", "#69b3a2").attr("stroke", "#fff").attr("stroke-width", 0.5);
+    svg.selectAll("path").data(tracts.features).enter().append("path").attr("d", path).attr("fill", "#69b3a2").attr("stroke", "#fff")
+        .attr("stroke-width", 0.5)
+        .on('click', function(d) {
+            updateTractTimeSeries(d.properties.id.substr(5, 4))
+        });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
   });
