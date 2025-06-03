@@ -53,7 +53,6 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
         current_year_parsed_data['Tract ID'] = df['Tract ID']
         current_year_parsed_data['County'] = df['County']
         current_year_parsed_data['Year'] = df['Year']
-        current_year_parsed_data['Base Tract ID'] = df['Tract ID'].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
 
         # --- Dynamic Educational Attainment Calculation (Bachelor's Degree or Higher Count) ---
         bachelors_or_higher_count = None
@@ -115,13 +114,12 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
         current_year_parsed_data[STANDARD_EDU_ATTAIN_NAME] = bachelors_or_higher_count.fillna(0) if bachelors_or_higher_count is not None else 0
 
         # Define the columns used for grouping (Base Tract ID, County, Year)
-        group_cols = ['Base Tract ID', 'County', 'Year']
+        group_cols = ['Tract ID', 'County', 'Year']
         
         # Group by Base Tract ID, County, Year, and take the mean of the bachelor's degree or higher count
         grouped_data = current_year_parsed_data.groupby(group_cols)[STANDARD_EDU_ATTAIN_NAME].mean().reset_index()
 
-        # Rename 'Base Tract ID' back to 'Tract ID' for consistency in the final output
-        grouped_data = grouped_data.rename(columns={'Base Tract ID': 'Tract ID'})
+        # append the current row to all other rows
         all_years_data.append(grouped_data)
 
     if not all_years_data:

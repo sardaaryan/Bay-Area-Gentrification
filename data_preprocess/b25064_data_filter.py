@@ -59,8 +59,6 @@ def clean_and_process_gross_rent_data(start_year=2010, end_year=2023, output_fil
         current_year_parsed_data['Tract ID'] = df['Tract ID']
         current_year_parsed_data['County'] = df['County']
         current_year_parsed_data['Year'] = df['Year']
-        # Create 'Base Tract ID' for aggregation, handling split tracts (e.g., 123.01 -> 123)
-        current_year_parsed_data['Base Tract ID'] = df['Tract ID'].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
 
         # Extract and convert median gross rent to numeric
         # Handle "2,000+" and "***" values. Coerce errors to NaN, then fill NaN with 0.
@@ -73,13 +71,12 @@ def clean_and_process_gross_rent_data(start_year=2010, end_year=2023, output_fil
             current_year_parsed_data[STANDARD_GROSS_RENT_NAME] = 0
 
         # Define the columns used for grouping (Base Tract ID, County, Year)
-        group_cols = ['Base Tract ID', 'County', 'Year']
+        group_cols = ['Tract ID', 'County', 'Year']
         
         # Group by Base Tract ID, County, Year, and take the mean of the median gross rent
         grouped_data = current_year_parsed_data.groupby(group_cols)[STANDARD_GROSS_RENT_NAME].mean().reset_index()
 
-        # Rename 'Base Tract ID' back to 'Tract ID' for consistency in the final output
-        grouped_data = grouped_data.rename(columns={'Base Tract ID': 'Tract ID'})
+        # add row to rows
         all_years_data.append(grouped_data)
 
     if not all_years_data:

@@ -2,7 +2,7 @@ import pandas as pd
 import glob
 import os
 
-def process_census_data(input_dir=".", output_file="bay_area_population.csv"):
+def process_census_data(input_dir=".", output_file="total_pop.csv"):
     """
     Processes ACS data files for Bay Area counties, performs data cleaning and aggregation,
     handling a column swap in the 2010 file.
@@ -46,18 +46,9 @@ def process_census_data(input_dir=".", output_file="bay_area_population.csv"):
     # Concatenate all yearly data
     combined_df = pd.concat(all_data, ignore_index=True)
 
-    # Aggregate by whole Tract ID
-    def get_whole_tract(tract_id):
-        parts = tract_id.split('.')
-        return parts[0]
-
-    combined_df['Whole Tract ID'] = combined_df['Tract ID'].apply(get_whole_tract)
-    aggregated_df = combined_df.groupby(['Whole Tract ID', 'County', 'Year'])['Estimate!!Total'].sum().reset_index()
-    aggregated_df.rename(columns={'Whole Tract ID': 'Tract ID'}, inplace=True)
-
     # Save to a single CSV file
-    aggregated_df.to_csv(output_file, index=False)
+    combined_df.to_csv(output_file, index=False)
 
 if __name__ == "__main__":
     process_census_data()
-    print(f"Processed data saved to bay_area_population.csv, handling 2010 column swap.")
+    print(f"Processed data saved to total_pop.csv, handling 2010 column swap.")
