@@ -29,6 +29,25 @@ The repository consists of the following components:
 </details>
 
 - `map_preprocess/`: this folder contains preprocessing logic used to get the topo.json files to the form currently seen (to draw their SVG's).
+    <details>
+    <summary>Recreating filtered TopoJson file for Bay Area counties</summary>
+
+    1. Navigate to [this github repo](https://github.com/jethin/us-counties-tracts-topojson) containing topojson files for all counties and tracts across america.
+    2. The county maps are seperated by state and since California is the 6th state when ordered alphabetically, download 06.topo.json from the counties folder
+    3. After downloading, put the topo.json file in the map_preprocess/counties working directory before running filter.js, which will filter and select only the bay area counties from all the counties in California.
+    4. Now you will have a new file called 'filtered-countied.topo.json' which you should move into the data folder.
+
+</details>
+    <details>
+    <summary> Recreating filtered TopoJson file for Bay Area counties </summary>
+
+    1. Navigate to [this github repo](https://github.com/jethin/us-counties-tracts-topojson) containing topojson files for all counties and tracts across america.
+    2. The county maps are seperated by state and since California is the 6th state when ordered alphabetically, download 06.topo.json from the counties folder
+    3. After downloading, put the topo.json file in the map_preprocess/counties working directory before running filter.js, which will filter and select only the bay area counties from all the counties in California.
+    4. Now you will have a new file called 'filtered-countied.topo.json' which you should move into the data folder.
+
+</details>
+
 - `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports from these parent subdirectories, using whichever command-line approach you desire. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
 - `src/` contains all of the code of our implementation. We break down it's structure next.
     - (NEED TO FINISH `src/`!!) <- this will be pretty long
