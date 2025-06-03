@@ -18,7 +18,6 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* So it fits content tightly */
   align-items: flex-start;
 }
 
@@ -46,12 +45,9 @@ body {
 .slider-labels {
   display: flex;
   justify-content: space-between;
-  width: 100%;
   font-size: 12px;
   margin-top: 5px;
-  padding: 0 5px;
 }
-
 
 /* Right Section: 40% width */
 .right {
