@@ -18,7 +18,7 @@ The actual implementation lives in `src/`, and installation and setup will take 
 
 We walk through installation steps here to prepare for execution.
 
-1. Navigate to this [DropBox Link]([https://www.dropbox.com/scl/fo/jk7hzesqrmk1rj6cyiy25/AGJSShiGR5IBjCmfht8mKiw?rlkey=k7syl4gqx0d89zpmciyyait39&st=mw99bhws&dl=0](https://www.dropbox.com/scl/fo/jk7hzesqrmk1rj6cyiy25/AGJSShiGR5IBjCmfht8mKiw?rlkey=k7syl4gqx0d89zpmciyyait39&st=yxseja76&dl=0)) and download the zipped, preprocessed dataset, titled `data/`.
+1. Navigate to this [DropBox Link](https://www.dropbox.com/scl/fo/jk7hzesqrmk1rj6cyiy25/AGJSShiGR5IBjCmfht8mKiw?rlkey=k7syl4gqx0d89zpmciyyait39&st=mw99bhws&dl=0](https://www.dropbox.com/scl/fo/jk7hzesqrmk1rj6cyiy25/AGJSShiGR5IBjCmfht8mKiw?rlkey=k7syl4gqx0d89zpmciyyait39&st=yxseja76&dl=0) and download the zipped, preprocessed dataset, titled `data/`.
 2. Unzip, and do not change the name of the directory, nor it's contents. Make sure it is positioned inside `src/` (it's exact position should be `src/data/`), with the rest of the source code.
 3. The project is ready to be executed!
 
