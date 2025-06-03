@@ -36,16 +36,10 @@ The repository consists of the following components:
     2. The county maps are seperated by state and since California is the 6th state when ordered alphabetically, download 06.topo.json from the counties folder
     3. After downloading, put the topo.json file in the map_preprocess/counties working directory before running filter.js, which will filter and select only the bay area counties from all the counties in California.
     4. Now you will have a new file called 'filtered-countied.topo.json' which you should move into the data folder.
-
-</details>
-    <details>
-    <summary> Recreating filtered TopoJson file for Bay Area counties </summary>
-
-    1. Navigate to [this github repo](https://github.com/jethin/us-counties-tracts-topojson) containing topojson files for all counties and tracts across america.
-    2. The county maps are seperated by state and since California is the 6th state when ordered alphabetically, download 06.topo.json from the counties folder
-    3. After downloading, put the topo.json file in the map_preprocess/counties working directory before running filter.js, which will filter and select only the bay area counties from all the counties in California.
-    4. Now you will have a new file called 'filtered-countied.topo.json' which you should move into the data folder.
-
+    5. Next, download the tracts.zip file from [the same repo](https://github.com/jethin/us-counties-tracts-topojson).
+    6. Unziping the file, each topo.json file in the folder will coorespond to a county in the U.S and is named as the counties FIPS identification code.
+    7. You will need to copy the cooresponding files to the following county FIPS codes and put them in the src/data/tracts directory:
+    06001, 06013, 06041, 06055, 06075, 06081, 06085, 06095, 06097
 </details>
 
 - `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports from these parent subdirectories, using whichever command-line approach you desire. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
