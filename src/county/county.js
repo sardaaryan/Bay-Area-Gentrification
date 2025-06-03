@@ -1,5 +1,5 @@
 const county = window.location.search.replace("%20", " ").substr(1);
-const year = yearSlider.value;
+//const year = yearSlider.value;
 const width = 960, height = 600;
 const countyids = {
     "Alameda":"06001",
@@ -42,6 +42,13 @@ d3.json(tractfile).then((topoData) => {
 
   svg.append("g")
     .attr("style", "font-family: 'Lato';");
+});
+
+const slider = document.getElementById("yearSlider");
+const yearSlider = document.getElementById("selected-year");
+
+slider.addEventListener("input", () => {
+  yearSlider.textContent = slider.value;
 });
 
 //calculate gentrification for current year
