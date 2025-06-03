@@ -30,21 +30,6 @@ body {
   margin-top: 5px;
 }
 
-/* Slider Styling*/
-.slider-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 15px;
-  padding: 10px 10px;
-  background: #f0f4f0; /* light greenish background */
-  border: 1px solid #c8dbbf; /* soft green border */
-  border-radius: 5px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  font-family: Helvetica, Arial, sans-serif;
-  color: #333;
-}
-
 /* Right Section: 40% width */
 .right {
   width: 40%;
@@ -54,7 +39,35 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 12px;
+  height: 100%;
 }
+
+
+/* Styling for visualization section titles */
+.right section h2 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  text-transform: uppercase; 
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 3px;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+ 
+.streamgraph,
+.barchart,
+.annotations {
+  padding: 15px;
+  border-radius: 6px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  flex: 1; /* evenly distribute vertical space */
+  overflow: auto;
+}
+
 
 .annotations ul {
   padding-left: 20px;
