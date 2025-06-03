@@ -185,16 +185,20 @@ const allAnnotations = {
 
 const slider = document.getElementById("yearSlider");
 const yearDisplay = document.getElementById("selected-year");
-slider.addEventListener("input", () => {
-  const year = slider.value;
+
+function updateForYear(year) {
   yearDisplay.textContent = year;
   const annotationsForYear = allAnnotations[year] || [];
   updateAnnotationsForYear(year, annotationsForYear);
+}
 
-  // Dispatch a custom event for year change, for heatmap/barplot/etc to listen to
-  const yearChangeEvent = new CustomEvent("yearChange", { detail: { year } });
-  window.dispatchEvent(yearChangeEvent);
+slider.value = 2010;
+updateForYear(slider.value);
+
+slider.addEventListener("input", () => {
+  updateForYear(slider.value);
 });
+
 
 
 //calculate gentrification for current year
