@@ -1,10 +1,8 @@
 import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
 
-
 const county = window.location.search.replace("%20", " ").substr(1);
 
-let year = yearSlider.value;
-
+//const year = yearSlider.value;
 const width = 960, height = 600;
 
 const countyids = {
@@ -33,6 +31,7 @@ const attributeFiles = [
 
 const occFile = "../data/vac_status.csv"; // has: Total Housing Units, Vacant Units
 const filteredData = new Map(); // key = TractID_Year
+
 
 //HELPER FUNCTIONS
 
@@ -132,14 +131,8 @@ function init() {
   });
 }
 
-yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
 
-
-
-
-
-// Timeline Annotations
-
+// Annotations
 const allAnnotations = {
   "2010": [
         "Apple introduces the tablet computer iPad that sells one million units in less than one month",
@@ -271,23 +264,21 @@ const allAnnotations = {
   ]
 };
 
-const slider = document.getElementById("yearSlider");
-const yearDisplay = document.getElementById("selected-year");
 
-function updateForYear(year) {
-  yearDisplay.textContent = year;
-  const annotationsForYear = allAnnotations[year] || [];
-  updateAnnotationsForYear(year, annotationsForYear);
-}
+const yearSlider = document.getElementById("yearSlider");
+const selectedYear = document.getElementById("selected-year"); // changes year for slider
 
-slider.value = 2010;
-updateForYear(slider.value);
+let year = yearSlider.value;
+selectedYear.textContent = year;
 
-slider.addEventListener("input", () => {
-  updateForYear(slider.value);
+yearSlider.addEventListener("input", () => {
+  selectedYear.textContent = yearSlider.value;
 });
 
+yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
+  updateAnnotationsForYear(allAnnotations[year] || []);
 
+}; //Debug: console.log(year, yearData);};
 
 //calculate gentrification for current year
 //using the function genScore() from heatmap.js
