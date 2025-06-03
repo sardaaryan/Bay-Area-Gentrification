@@ -15,7 +15,7 @@ const countyids = {
 };
 
 let data = []; //data has all data for current county
-let hMapData = []; //data for heat map filtered to current year on year slider
+let yearData = []; //data for heat map filtered to current year on year slider
 
 
 const attributeFiles = [
@@ -31,8 +31,8 @@ const filteredData = new Map(); // key = TractID_Year
 
 //HELPER FUNCTIONS
 
-function updateHMapData() {
-  hMapData = data.filter((d) => d.Year === year);
+function updateyearData() {
+  yearData = data.filter((d) => d.Year === year);
 }
 
 // Load and merge all CSVs
@@ -75,7 +75,7 @@ Promise.all([...attributeFiles.map((d) => d3.csv(d.file)), d3.csv(occFile)]).the
 
   // Convert to global array
   data = Array.from(filteredData.values());
-  updateHMapData();
+  updateyearData();
   init();
 });
 
@@ -105,7 +105,7 @@ function init() {
   });
 }
 
-yearSlider.onchange = function(){year = yearSlider.value; updateHMapData(); console.log(year, hMapData);};
+yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); console.log(year, yearData);};
 //calculate gentrification for current year
 //using the function genScore() from heatmap.js
 //color regions
