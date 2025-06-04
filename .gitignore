@@ -1,6 +1,7 @@
 # data and jsons
-data/
+**data/
 tracts/
+counties/
 
 # latex pdfs, logs, bibliography and auxiliary files
 *.pdf

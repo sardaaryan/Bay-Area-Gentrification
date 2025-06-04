@@ -28,7 +28,22 @@ The repository consists of the following components:
     15.  Now take a break. You've earned it!
   </details>
 
-- `map_preprocess/`: this folder contains preprocessing logic used to get the topo.json files to the form currently seen (to draw their SVG's).
+- `map_preprocess/`: this folder contains preprocessing logic used to get the topo.json files to the for currently seen. These topo.json's draw the county census tract SVG's for
+  the heatmap, as well as the Greater Bay Area map.
+
+    <details>
+    <summary>Recreating filtered TopoJson file for Bay Area counties</summary>
+
+    1. Navigate to [this github repo](https://github.com/jethin/us-counties-tracts-topojson) containing topojson files for all counties and tracts across america.
+    2. The county maps are separated by state. Since California is the 6th state when ordered alphabetically, download 06.topo.json from the counties folder
+    3. After downloading, put the topo.json file in the `map_preprocess/counties/` working directory before running `filter.js` (in the same directory), which will filter and select only the bay area counties from all the counties in California.
+    4. Now you will have a new file, `filtered-countied.topo.json`. Move this to the `src/data/` folder.
+    5. Next, download `tracts.zip` from [the same repo](https://github.com/jethin/us-counties-tracts-topojson).
+    6. Unzipping the file, each topo.json file in the folder will correspond to a county in the U.S and is named as the counties FIPS identification code.
+    7. You will need to copy the cooresponding files to the following county FIPS codes and put them in the `src/data/tracts/` directory:
+    06001, 06013, 06041, 06055, 06075, 06081, 06085, 06095, 06097. These correspond to the 9 Bay Area counties.
+    8. And you are finished!
+    </details>
 
 - `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports with the following steps:
 

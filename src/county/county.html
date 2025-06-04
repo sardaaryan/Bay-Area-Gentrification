@@ -12,35 +12,41 @@
     <div class="left">
       <h1 id="county_display">San Francisco Heatmap</h1>
       <svg id="heatmap" width="100%" height="500"></svg>
-      <input type="range" id="yearSlider" min="2010" max="2023" value="2010" step="1"/>
-      <div class="slider-labels">
-        <span>2010</span>
-        <span>2023</span>
+     
+      <div class="slider-container">
+        <label for="yearSlider">YEAR:</label>
+        <input type="range" id="yearSlider" min="2010" max="2023" value="2010" step="1" />
+        <span id="selected-year">2010</span>
+        
       </div>
     </div>
 
     <!-- Right Section: Annotation + Stream Graph + Bar Chart -->
     <div class="right">
-      <div class="annotations">
-        <h2>Annotations</h2>
-      <!-- Annotations Here-->
-      </div>
+      <section class="annotations" id="timeline-section">
+        <h2>Timeline Annotations</h2>
+        <div id="timeline-annotations"></div>
+      </section>
 
-      <div class="streamgraph-container">
-        <h2>Gentrification Trends</h2>
-        <svg id="streamgraph" width="100%" height="200"></svg>
-      </div>
+      <section class="streamgraph" id="streamgraph-container">
+        <h2>Stream Graph</h2>
+        <div id="streamgraph-container"></div>
+        <div id="legend-container"></div>
+        <label for="tract-select">Select Census Tract:</label>
+        <select id="tract-select"></select>
+      </section>
 
-      <div class="barchart-container">
-        <h2>Comparative Indicators</h2>
-        <svg id="barchart" width="100%" height="150"></svg>
-      </div>
-    </div>
+      <!-- Comparative bar chart -->
+    <section class="barchart" id="barchart-container">
+      <h2>Comparative Bar Chart</h2>
+      <div id="barchart-container"></div>
+    </section>
   </div>
-  <svg id="heatmap" width="100%" height="500"></svg>
+</div>
 
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
-  <script src="county.js"></script>
+  <script type="module" src="county.js"></script>
+  
 </body>
 </html>
