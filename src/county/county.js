@@ -1,6 +1,6 @@
-import { genScore, getYearData } from "../heatmap/heatmap.js";
 import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
 import { genScore } from '../heatmap/heatmap.js';
+
 
 const county = window.location.search.replace("%20", " ").substr(1);
 
@@ -333,5 +333,4 @@ function updateheatmap() {
   
 }
 yearSlider.onchange = function(){year = yearSlider.value; updateheatmap();};
-
-
+//color regions
