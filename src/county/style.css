@@ -6,19 +6,26 @@ body {
 
 .container {
   display: flex;
+  flex-direction: row;
   height: 100vh;
   width: 100vw;
+  overflow: hidden;
 }
 
 /* Left Section: 60% width */
 .left {
-  width: 60%;
-  padding: 20px;
-  background-color: #f5f5f5;
-  box-sizing: border-box;
+  flex: 3;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#heatmap {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
 }
 
 #yearSlider {
@@ -32,7 +39,6 @@ body {
   width: 90%;
   display: flex;
   align-items: center;
-  gap: 10px;
   padding: 10px 10px;
   background: #b9e4cd; 
   border: 1px solid #b0d0b9; 
@@ -49,17 +55,28 @@ body {
   margin-top: 5px;
 }
 
-/* Right Section: 40% width */
-.right {
-  width: 40%;
-  padding: 20px;
-  background-color: #ffffff;
-  box-sizing: border-box;
+section {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 12px;
-  height: 100%;
+  overflow: hidden;
+}
+
+.streamgraph svg,
+.barchart svg {
+  width: 100%;
+  height: -webkit-fill-available;
+}
+
+
+/* Right Section: 40% width */
+.right {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 
@@ -71,26 +88,18 @@ body {
   font-weight: 600;
   color: #000000;
   text-transform: uppercase; 
-  border-bottom: 1px solid #ccc;
+  border-bottom: 3px solid #ccc;
   padding-bottom: 3px;
   font-family: Arial, sans-serif;
-}
-
- 
-.streamgraph,
-.barchart,
-.annotations {
-  padding: 15px;
-  border-radius: 6px;
-  background: white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  flex: 1; /* evenly distribute vertical space */
-  overflow: auto;
 }
 
 
 .annotations ul {
   padding-left: 20px;
+}
+
+.annotations{
+    overflow-y: auto;
 }
 
 .streamgraph-container, .barchart-container {
