@@ -1,5 +1,5 @@
-import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
-
+import { genScore} from "./dashboards/heatmap.js";
+import { updateAnnotationsForYear } from './dashboards/annotations.js';
 
 const county = window.location.search.replace("%20", " ").substr(1);
 
@@ -137,12 +137,7 @@ function init() {
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
 
-
-
-
-
 // Timeline Annotations
-
 const allAnnotations = {
   "2010": [
         "Apple introduces the tablet computer iPad that sells one million units in less than one month",
@@ -287,6 +282,6 @@ yearSlider.onchange = function(){year = yearSlider.value; updateyearData();
   updateAnnotationsForYear(allAnnotations[year] || []);
 };
 
-//calculate gentrification for current year
 //using the function genScore() from heatmap.js
+//const genVals = genScore(yeardata[0], yeardata[1]);
 //color regions

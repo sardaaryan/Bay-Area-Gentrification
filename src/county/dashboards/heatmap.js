@@ -8,7 +8,7 @@
 
     This function doesnt not know which county it's calculating for it only crunches numbers.
 */
-function genScore(previousYearData, currentYearData) {
+export function genScore(previousYearData, currentYearData) {
   // Attributes in order: income, home value, rent, occupancy, education
   const ATTRIBUTES = ['income', 'homeValue', 'rent', 'occupancy', 'education'];
 
