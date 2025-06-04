@@ -1,5 +1,6 @@
 import { genScore} from "./dashboards/heatmap.js";
 import { updateAnnotationsForYear } from './dashboards/annotations.js';
+import { renderBarChart } from './dashboards/barChart.js';
 import { countyids, attributeFiles, allAnnotations } from './values.js';
 
 const county = window.location.search.replace("%20", " ").substr(1);
@@ -68,7 +69,7 @@ function updateheatmap() {
   updateyearData();
   if (prevYearData.length > 0) {
     const scores = genScore(prevYearData, yearData); 
-    console.log("scores ",scores);
+    //console.log("scores ",scores);
     updateregions(scores);
     
   } else {
@@ -135,14 +136,16 @@ function init() {
         .on('click', function(d) {
             const id = d.properties.id.substr(5).trim();
             updateTractTimeSeries(id);
-            console.log(tractData);
+            //console.log(tractData);
         });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
     //called heatmap here bc need to wait for svg to load and loads on page open
     updateheatmap();
+    // After heatmap is updated, NOW we update the barchart
+    renderBarChart("#barchart-container", yearData); 
   });
-  console.log(yearData, tractData);
+  //console.log(yearData, tractData);
   
 }
 
@@ -162,5 +165,6 @@ yearSlider.addEventListener("input", () => {
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
   updateheatmap();
+  renderBarChart("#barchart-container", yearData); 
 };
 //color regions
