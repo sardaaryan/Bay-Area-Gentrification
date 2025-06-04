@@ -1,5 +1,5 @@
-import { genScore, getYearData } from "../heatmap/heatmap.js";
-import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
+import { genScore, getYearData } from "./dashboards/heatmap.js";
+import { updateAnnotationsForYear } from './dashboards/annotations.js';
 
 const county = window.location.search.replace("%20", " ").substr(1);
 
