@@ -1,95 +1,82 @@
-/*
-    The format for the data params is 
-    TRACT_ID, MEDIAN_INCOME, MEDIAN_HOMEVALUE, GROSS_RENT, OCCUPANCY RATE, EDUCATIONAL_ATTAINMENT(bachelors only)
-    
-    Im not sure what the actual names will be since we have to  
-    parse outside of the function but that means we'll have to change
-    the ATTRIBUTES values when we do have it.
+// Generates a gentrification score for each census tract by comparing previous and current data
+export function genScore(prev, curr) {
+  // List of attributes to use for scoring
+  const ATTRS = [
+    "Median_Household_Income",            
+    "Median Value",                       
+    "Median_Gross_Rent",                  
+    "Vacant Units",                       
+    "25_Plus_Bachelors_Degree_Or_Higher_Count"
+  ];
 
-    This function doesnt not know which county it's calculating for it only crunches numbers.
-*/
-export function genScore(previousYearData, currentYearData) {
-  // Attributes in order: income, home value, rent, occupancy, education
-  const ATTRIBUTES = ['income', 'homeValue', 'rent', 'occupancy', 'education'];
+  // Create lookup tables for previous by tract ID
+  const prevByTract = Object.fromEntries(prev.map(d => [d["Tract ID"], d]));
 
-  // Step 1: Create lookup maps for previous and current year data
-  const prevMap = new Map(previousYearData.map(d => [d.tractId, d]));
-  const currMap = new Map(currentYearData.map(d => [d.tractId, d]));
-
-  // Step 2: Compute countywide averages for both years
-  const countySumsPrev = { income: 0, homeValue: 0, rent: 0, occupancy: 0, education: 0 };
-  const countySumsCurr = { income: 0, homeValue: 0, rent: 0, occupancy: 0, education: 0 };
-  let tractCount = 0;
-
-  for (const tract of currentYearData) {
-    const prev = prevMap.get(tract.tractId);
-    if (!prev) continue;
-
-    let valid = true;
-    for (const attr of ATTRIBUTES) {
-      if (
-        typeof tract[attr] !== 'number' || typeof prev[attr] !== 'number' ||
-        tract[attr] <= 0 || prev[attr] <= 0
-      ) {
-        valid = false;
-        break;
-      }
-    }
-
-    if (!valid) continue;
-
-    for (const attr of ATTRIBUTES) {
-      countySumsCurr[attr] += tract[attr];
-      countySumsPrev[attr] += prev[attr];
-    }
-
-    tractCount++;
+  // Helper function to compute medians for each attribute in a dataset
+  function getMedians(data) {
+    return ATTRS.map(attr => {
+      const values = data
+        .map(d => parseFloat(d[attr]))
+        .filter(v => !isNaN(v) && v > 0); // Only positive, valid numbers
+      if (!values.length) return undefined;
+      values.sort((a, b) => a - b);
+      const mid = Math.floor(values.length / 2);
+      // Return median value
+      return values.length % 2 === 0
+        ? (values[mid - 1] + values[mid]) / 2
+        : values[mid];
+    });
   }
 
-  const countyAverages = {};
-  for (const attr of ATTRIBUTES) {
-    countyAverages[attr] = {
-      curr: countySumsCurr[attr] / tractCount,
-      prev: countySumsPrev[attr] / tractCount
-    };
-  }
+  // Compute medians for previous and current datasets
+  const prevMedians = getMedians(prev);
+  const currMedians = getMedians(curr);
 
-  // Step 3: Compute M scores per tract
   const results = [];
 
-  for (const tract of currentYearData) {
-    const prev = prevMap.get(tract.tractId);
-    if (!prev) continue;
+  // Iterate through each tract in the current data
+  for (const tract of curr) {
+    const tractId = tract["Tract ID"];
+    const prevTract = prevByTract[tractId];
+    if (!prevTract) continue; // Skip if tract not present in previous data
 
-    let scoreSum = 0;
-    let valid = true;
+    let M = 0; // Accumulator for score
+    let validAttrs = 0; // Count of valid attributes used
 
-    // Compute log(G_n) - log(Ḡ_n) for income, home value, rent, occupancy
-    for (const attr of ATTRIBUTES.slice(0, 4)) {
-      const G_n = tract[attr] / prev[attr];
-      const G_avg = countyAverages[attr].curr / countyAverages[attr].prev;
+    // For each attribute, calculate the log-ratio term
+    for (let i = 0; i < ATTRS.length; i++) {
+      const attr = ATTRS[i];
 
-      if (G_n <= 0 || G_avg <= 0) {
-        valid = false;
-        break;
+      const Xn = parseFloat(tract[attr]);      // Current value
+      const xn = parseFloat(prevTract[attr]);  // Previous value
+      const Xn_med = currMedians[i];           // Current median
+      const xn_med = prevMedians[i];           // Previous median
+
+      // Skip if any value is invalid or non-positive
+      if (
+        isNaN(Xn) || isNaN(xn) || isNaN(Xn_med) || isNaN(xn_med) ||
+        Xn <= 0 || xn <= 0 || Xn_med <= 0 || xn_med <= 0
+      ) {
+        continue;
       }
 
-      scoreSum += Math.log(G_n) - Math.log(G_avg);
+      const Gn = Xn / xn;           // Growth ratio for tract
+      const Gn_med = Xn_med / xn_med; // Growth ratio for median
+
+      // For the last attribute, reverse the log difference
+      const logTerm = (i === 4)
+        ? Math.log(Gn_med) - Math.log(Gn)
+        : Math.log(Gn) - Math.log(Gn_med);
+
+      M += logTerm;
+      validAttrs++;
     }
 
-    if (!valid) continue;
-
-    // Special handling for education (flipped log difference)
-    const attr = 'education';
-    const G_n = tract[attr] / prev[attr];
-    const G_avg = countyAverages[attr].curr / countyAverages[attr].prev;
-
-    if (G_n <= 0 || G_avg <= 0) continue;
-
-    const educationComponent = Math.log(G_avg) - Math.log(G_n);
-    const M = (scoreSum + educationComponent) / 5;
-
-    results.push({ tractId: tract.tractId, score: M });
+    // Store the average score for this tract (or undefined if no valid attributes)
+    results.push({
+      tractId,
+      score: validAttrs > 0 ? M / validAttrs : undefined
+    });
   }
 
   return results;
