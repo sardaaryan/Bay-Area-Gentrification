@@ -1,4 +1,5 @@
 import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
+import { getMedians, renderBarChart } from './dashboards/js/barChart.js';
 
 const county = window.location.search.replace("%20", " ").substr(1);
 
@@ -107,6 +108,9 @@ const tractfile = "../data/tracts/" + countyids[county] + ".topo.json";
 
 //CALL ALL VISUALIZATION FUNCTIONS HERE
 function init() { 
+  updateAnnotationsForYear(allAnnotations[year] || []);
+  renderBarChart(yearData);
+
   //draw regions
   d3.json(tractfile).then((topoData) => {
     // Convert TopoJSON to GeoJSON FeatureCollection
@@ -265,7 +269,6 @@ const allAnnotations = {
 };
 
 
-const yearSlider = document.getElementById("yearSlider");
 const selectedYear = document.getElementById("selected-year"); // changes year for slider
 
 let year = yearSlider.value;
@@ -277,6 +280,10 @@ yearSlider.addEventListener("input", () => {
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
+
+  const medians = getMedians(yearData);
+  renderBarChart(medians);
+
 
 }; //Debug: console.log(year, yearData);};
 
