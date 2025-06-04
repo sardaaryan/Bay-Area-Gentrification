@@ -1,6 +1,7 @@
 import { genScore} from "./dashboards/heatmap.js";
 import { updateAnnotationsForYear } from './dashboards/annotations.js';
 import { renderBarChart } from './dashboards/barChart.js';
+import { initializeStreamGraph, updateStreamGraph } from './dashboards/streamGraph.js';
 import { countyids, attributeFiles, allAnnotations } from './values.js';
 
 const county = window.location.search.replace("%20", " ").substr(1);
@@ -9,12 +10,11 @@ let year = yearSlider.value;
 
 const width = 960, height = 600;
 
-
 let data = []; //data has all data for current county across all years. ALL DATA FOR COUNTY
 let yearData = []; //data filtered to current year on year slider. HEATMAP + BAR CHART
 let prevYearData = [] //data filtered for current year
 let tractData = []; //data filtered to specific tract based on heatmap click. STREAM GRAPH
-
+let selectedTractId = null; // Track currently selected tract
 
 const filteredData = new Map(); // key = TractID_Year
 
@@ -29,10 +29,67 @@ function updateyearData() {
 }
 
 function updateTractTimeSeries(tractID) {
+  selectedTractId = tractID;
+  
+  // Debug: Log the tract ID and available tract IDs in data
+  console.log("Selected tract ID:", tractID);
+  console.log("Available tract IDs in data:", [...new Set(data.map(d => d["Tract ID"]))].slice(0, 10));
+  
   tractData = data
     .filter(d => d["Tract ID"] === tractID)
     .sort((a, b) => +a.Year - +b.Year);
-  //Debug: console.log(tractID, tractData);
+  
+  console.log("Filtered tract data:", tractData.length, "records");
+  
+  // Update stream graph with new tract data
+  updateStreamGraph(tractData);
+  
+  // Highlight selected tract
+  highlightSelectedTract(tractID);
+}
+
+function highlightSelectedTract(tractID) {
+  // Reset all tract styles
+  svg.selectAll("path")
+    .attr("stroke", "#222")
+    .attr("stroke-width", 0.5)
+    .style("opacity", 1);
+  
+  // Highlight selected tract
+  if (tractID) {
+    svg.selectAll("path")
+      .filter(function(d) {
+        if (!d || !d.properties) return false;
+        let id = d.properties.id;
+        if (typeof id === 'string' && id.length > 5) {
+            id = id.substr(5).trim();
+        } else if (d.properties.GEOID) {
+            id = d.properties.GEOID.toString().substr(5).trim();
+        } else if (d.properties.tractce || d.properties.TRACTCE) {
+            id = (d.properties.tractce || d.properties.TRACTCE).toString();
+        }
+        return id === tractID;
+      })
+      .attr("stroke", "#000")
+      .attr("stroke-width", 2.5)
+      .style("opacity", 1);
+    
+    // Dim other tracts slightly
+    svg.selectAll("path")
+      .filter(function(d) {
+        if (!d || !d.properties) return false;
+        let id = d.properties.id;
+        if (typeof id === 'string' && id.length > 5) {
+            id = id.substr(5).trim();
+        } else if (d.properties.GEOID) {
+            id = d.properties.GEOID.toString().substr(5).trim();
+        } else if (d.properties.tractce || d.properties.TRACTCE) {
+            id = (d.properties.tractce || d.properties.TRACTCE).toString();
+        }
+        return id !== tractID;
+      })
+      .style("opacity", 0.8);
+  }
 }
 
 function preprocessTractID(id){
@@ -50,7 +107,8 @@ function updateregions(scores) {
     .interpolator(d3.interpolateReds);
 
   svg.selectAll("path")
-    .attr("fill", (d) => {
+    .attr("fill", function(d) {
+      if (!d || !d.properties) return "#fff";
       const tractId = d.properties.id.substr(5).trim();
       const scoreObj = scores.find(s => s.tractId === tractId);
       if (scoreObj && typeof scoreObj.score === "number" && scoreObj.score > 0) {
@@ -63,7 +121,13 @@ function updateregions(scores) {
     })
     .attr("stroke", "#222") 
     .attr("stroke-width", 0.5);
+  
+  // Maintain selected tract highlighting after color update
+  if (selectedTractId) {
+    highlightSelectedTract(selectedTractId);
+  }
 }
+
 //calculate gentrification for current year
 function updateheatmap() {
   updateyearData();
@@ -76,7 +140,6 @@ function updateheatmap() {
     const scores = []; // no valid data
     updateregions(scores);
   }
-  
 }
 
 // Load and merge all CSVs
@@ -119,6 +182,9 @@ const tractfile = "../data/tracts/" + countyids[county] + ".topo.json";
 function init() {
   updateAnnotationsForYear(allAnnotations[year] || []); 
   
+  // Initialize stream graph
+  initializeStreamGraph();
+  
   //draw regions
   d3.json(tractfile).then((topoData) => {
     // Convert TopoJSON to GeoJSON FeatureCollection
@@ -130,13 +196,71 @@ function init() {
 
     //Debug: //Debug: console.log(tracts);
 
+    // Debug: Log the structure of the first tract feature
+    console.log("Sample tract feature:", tracts.features[0]);
+    console.log("Sample tract properties:", tracts.features[0]?.properties);
+
     // Draw counties
-    svg.selectAll("path").data(tracts.features).enter().append("path").attr("d", path).attr("fill", "#69b3a2").attr("stroke", "#fff")
+    svg.selectAll("path").data(tracts.features).enter().append("path")
+        .attr("d", path)
+        .attr("fill", "#69b3a2")
+        .attr("stroke", "#fff")
         .attr("stroke-width", 0.5)
+        .style("cursor", "pointer")
         .on('click', function(d) {
-            const id = d.properties.id.substr(5).trim();
+            // In D3 v5, the data is the first parameter, not second
+            console.log("Clicked tract feature:", d);
+            console.log("Tract properties:", d ? d.properties : 'undefined');
+            
+            if (!d || !d.properties) {
+                console.error("No properties found on clicked tract");
+                return;
+            }
+            
+            // Try different ways to extract tract ID
+            let id = d.properties.id;
+            if (typeof id === 'string' && id.length > 5) {
+                id = id.substr(5).trim();
+            } else if (d.properties.GEOID) {
+                id = d.properties.GEOID.toString().substr(5).trim();
+            } else if (d.properties.tractce || d.properties.TRACTCE) {
+                id = (d.properties.tractce || d.properties.TRACTCE).toString();
+            }
+            
+            console.log("Extracted tract ID:", id);
             updateTractTimeSeries(id);
-            //console.log(tractData);
+        })
+        .on('mouseover', function(d) {
+            if (!d || !d.properties) return;
+            
+            let id = d.properties.id;
+            if (typeof id === 'string' && id.length > 5) {
+                id = id.substr(5).trim();
+            } else if (d.properties.GEOID) {
+                id = d.properties.GEOID.toString().substr(5).trim();
+            } else if (d.properties.tractce || d.properties.TRACTCE) {
+                id = (d.properties.tractce || d.properties.TRACTCE).toString();
+            }
+            
+            if (id !== selectedTractId) {
+                d3.select(this).style("opacity", 0.7);
+            }
+        })
+        .on('mouseout', function(d) {
+            if (!d || !d.properties) return;
+            
+            let id = d.properties.id;
+            if (typeof id === 'string' && id.length > 5) {
+                id = id.substr(5).trim();
+            } else if (d.properties.GEOID) {
+                id = d.properties.GEOID.toString().substr(5).trim();
+            } else if (d.properties.tractce || d.properties.TRACTCE) {
+                id = (d.properties.tractce || d.properties.TRACTCE).toString();
+            }
+            
+            if (id !== selectedTractId) {
+                d3.select(this).style("opacity", 1);
+            }
         });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
@@ -146,7 +270,6 @@ function init() {
     renderBarChart("#barchart-container", yearData); 
   });
   //console.log(yearData, tractData);
-  
 }
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
@@ -162,9 +285,16 @@ yearSlider.addEventListener("input", () => {
   selectedYear.textContent = yearSlider.value;
 });
 
-yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
+yearSlider.onchange = function(){
+  year = yearSlider.value; 
+  updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
   updateheatmap();
-  renderBarChart("#barchart-container", yearData); 
+  renderBarChart("#barchart-container", yearData);
+  
+  // Update stream graph with current tract data if a tract is selected
+  if (selectedTractId) {
+    updateTractTimeSeries(selectedTractId);
+  }
 };
 //color regions
