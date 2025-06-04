@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "#004d00",  // dark green
     "#4169e1",  // royal blue
     "#8a2be2",  // purple
-    "#ffd700",  // gold
+    "#ffd700",  // goldfcsv
     "#1c3d5a",  // slate blue
     "#D32F2F"   // red
   ]);

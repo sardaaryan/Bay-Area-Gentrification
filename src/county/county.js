@@ -19,9 +19,9 @@ const countyids = {
     "Sonoma":"06097"    
 };
 
-let data = []; //data has all data for current county across all years
-let yearData = []; //data filtered to current year on year slider
-let tractData = []; //data filtered to specific tract based on heatmap click
+let data = []; //data has all data for current county across all years. ALL DATA FOR COUNTY
+let yearData = []; //data filtered to current year on year slider. HEATMAP + BAR CHART
+let tractData = []; //data filtered to specific tract based on heatmap click. STREAM GRAPH
 
 const attributeFiles = [
   { file: "../data/edu_attain.csv", column: "25_Plus_Bachelors_Degree_Or_Higher_Count" },
@@ -107,7 +107,9 @@ const path = d3.geoPath().projection(projection);
 const tractfile = "../data/tracts/" + countyids[county] + ".topo.json";
 
 //CALL ALL VISUALIZATION FUNCTIONS HERE
-function init() { 
+function init() {
+  updateAnnotationsForYear(allAnnotations[year] || []); 
+  
   //draw regions
   d3.json(tractfile).then((topoData) => {
     // Convert TopoJSON to GeoJSON FeatureCollection
@@ -125,11 +127,12 @@ function init() {
         .on('click', function(d) {
             const id = d.properties.id.substr(5).trim();
             updateTractTimeSeries(id);
-            console.log(tractData);
         });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
   });
+
+  console.log(yearData, tractData);
 }
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
@@ -271,23 +274,18 @@ const allAnnotations = {
   ]
 };
 
-const slider = document.getElementById("yearSlider");
-const yearDisplay = document.getElementById("selected-year");
+//const yearSlider = document.getElementById("yearSlider");
+const selectedYear = document.getElementById("selected-year"); // changes year for slider
 
-function updateForYear(year) {
-  yearDisplay.textContent = year;
-  const annotationsForYear = allAnnotations[year] || [];
-  updateAnnotationsForYear(year, annotationsForYear);
-}
+selectedYear.textContent = year;
 
-slider.value = 2010;
-updateForYear(slider.value);
-
-slider.addEventListener("input", () => {
-  updateForYear(slider.value);
+yearSlider.addEventListener("input", () => {
+  selectedYear.textContent = yearSlider.value;
 });
 
-
+yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
+  updateAnnotationsForYear(allAnnotations[year] || []);
+};
 
 //calculate gentrification for current year
 //using the function genScore() from heatmap.js

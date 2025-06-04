@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });*/
 
-
 // annotations.js
 
 /*export function updateAnnotationsForYear(yearKey, annotationsDict) {
@@ -62,9 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   annotationBox.appendChild(ul);
 }*/
-export function updateAnnotationsForYear(year, annotations) {
+export function updateAnnotationsForYear(annotations) {
   const annotationContainer = document.getElementById("timeline-annotations");
-  annotationContainer.innerHTML = "";  // clear old annotations
+  annotationContainer.innerHTML = ""; // clear old annotations
 
   if (!annotations || annotations.length === 0) {
     annotationContainer.textContent = "No annotations for this year.";
@@ -72,11 +71,10 @@ export function updateAnnotationsForYear(year, annotations) {
   }
 
   const ul = document.createElement("ul");
-  annotations.forEach(note => {
+  annotations.forEach((note) => {
     const li = document.createElement("li");
     li.textContent = note;
     ul.appendChild(li);
   });
   annotationContainer.appendChild(ul);
 }
-
