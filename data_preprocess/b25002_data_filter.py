@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import os
 
-def clean_and_process_occupancy_status_data(start_year=2010, end_year=2023, output_filename="bay_area_occupancy_cleaned.csv"):
+def clean_and_process_occupancy_status_data(start_year=2010, end_year=2023, output_filename="vac_status.csv"):
     """
     Cleans and processes ACS occupancy status data for Bay Area census tracts.
     Handles multiple yearly CSV files with varying column headers, cleans specific columns,
@@ -20,8 +20,6 @@ def clean_and_process_occupancy_status_data(start_year=2010, end_year=2023, outp
     # Define regex patterns for the 'Estimate' columns we want to keep and their new standardized names.
     # The ':?' makes the colon optional, matching both "Total" and "Total:".
     COLUMNS_TO_KEEP_PATTERNS = {
-        r"Estimate!!Total:?$" : "Total Housing Units",
-        r"Estimate!!Total:?!!Occupied$" : "Occupied Units",
         r"Estimate!!Total:?!!Vacant$" : "Vacant Units"
     }
 
@@ -109,21 +107,10 @@ def clean_and_process_occupancy_status_data(start_year=2010, end_year=2023, outp
         # Add the "Year" variable
         df['Year'] = year
 
-        # Create 'Base Tract ID' for aggregation, handling split tracts (e.g., 123.01 -> 123)
-        df['Base Tract ID'] = df['Tract ID'].apply(lambda x: x.split('.')[0] if isinstance(x, str) and '.' in x else x)
-
         # Define the columns that we will sum for aggregation (these are the standardized names)
         columns_to_sum = standardized_count_columns
 
-        # Define the columns for grouping (Base Tract ID, County, Year)
-        group_cols = ['Base Tract ID', 'County', 'Year']
-
-        # Perform simple sum aggregation for the count columns
-        grouped_data = df.groupby(group_cols)[columns_to_sum].sum().reset_index()
-
-        # Rename 'Base Tract ID' back to 'Tract ID' for consistency in the final output
-        grouped_data = grouped_data.rename(columns={'Base Tract ID': 'Tract ID'})
-        all_years_data.append(grouped_data)
+        all_years_data.append(df[['Tract ID', 'County'] + columns_to_sum + ['Year']])
 
     if not all_years_data:
         print("No data processed. Exiting.")

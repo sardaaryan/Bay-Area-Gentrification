@@ -51,16 +51,28 @@
   </figure>
 
   <p>
-    This is a significant problem that has its roots in the mid-90s, as Silicon Valley began to situate itself in San Jose.
-    This visualization focuses on contemporary gentrification, from the year 2010 to the year 2023.
+    This is a significant problem that has its roots in the mid-90s, as Silicon Valley began to situate itself in Santa Clara county.
+    Cities including but not limited to Sunnyvale, Palo Alto, Menlo Park, Mountain View, and Cupertino have many of the millionaires
+    (and even billionaires) of the world. According to Wikipedia, the San Francisco Bay Area is second in the world (just behind New
+    York) for it's number of milionaires; and Silicon Valley's industry isn't nearly as old! The socioeconomic disparity is 
+    unprecedented, and it's only poised to worsen.
   </p>
+
+  <p>
+    This visualization focuses on contemporary gentrification, from the year 2010 to the year 2023. We hope this will hammer home that this
+    problem is not only a current issue, but one that isn't going away anytime soon. For abundant insight into Silicon Valley and how we
+    intended to relate it's 2010's success to rising Bay Area gentrification, check out our report! Instructions to access it are available
+    in the readme.
+  </p>
+
 
   <h2>Measuring Gentrification</h2>
 
   <p>
     Measuring gentrification is complicated. <a href="https://www.huduser.gov/portal/periodicals/cityscape/vol26num1/ch20.pdf">This article</a>
     operationalizes how to measures gentrification into 5 attributes, which have been acquired from the 2010-2023 American Community Survey (ACS).
-    The 5 attributes, and how to calculate gentrification with them, is tabulated below:
+    We have modified the formula and it's use-case, which will be touched on momentarily. The 5 attributes, and how to calculate gentrification 
+    with them, is tabulated below:
   </p>
 
   <table class="gentrification-table">
@@ -74,30 +86,32 @@
     </thead>
     <tbody>
       <tr>
-        <td>Median household income</td>
+        <td>Median household income (1)</td>
         <td>
-          If the tract's percentage increase is <em>above</em> the county's percentage increase.
+          If the tract's proportional increase for the given year is <em>above</em> the county's median proportional increase.
         </td>
         <td>S1901</td>
       </tr>
       <tr>
-        <td>Median home value</td>
-        <td>If a tract’s percentage increase for home value is <em>higher</em> than the countywide median percentage increase in home value.</td>
+        <td>Median home value (2)</td>
+        <td>If a tract’s proportional increase for the given year is <em>higher</em> than the countywide median proportional increase.</td>
         <td>S2506</td>
       </tr>
       <tr>
-        <td>Gross rent</td>
-        <td>If a tract’s percentage is <em>higher</em> than the countywide percentage increase in rent cost.</td>
+        <td>Gross rent (3)</td>
+        <td>If a tract’s proportional increase for the given year is <em>higher</em> than the countywide median proportional increase in rent cost.</td>
         <td>B25064</td>
       </tr>
       <tr>
-        <td>Occupancy Rate</td>
-        <td>If the percentage decrease is <em>above</em> the county's percentage decrease.</td>
+        <td>Vacancy rate (4)</td>
+        <td>If the tract's proportional decrease of vacant housing units is <em>above</em> the county's proportional median decrease of vacant housing units.</td>
         <td>B25002</td>
       </tr>
       <tr>
-        <td>Educational attainment</td>
-        <td>Percentage increase in college educated residents is <em>above</em> the countywide percentage increase in college educated residents.</td>
+        <td>Educational attainment (5)</td>
+        <td>Proportional increase in the population of people age 25 or over with a bachelor's degree or higher is <em>above</em> the countywide median 
+            proportional increase in the population of people age 25 or over with a bachelor's degree or higher.
+        </td>
         <td>S1501</td>
       </tr>
     </tbody>
@@ -105,23 +119,24 @@
 
     A few tweaks have been incorporated for measurement of this criteria:
   <ul>
-    <li>Percentage change is compared on a year-to-year basis for each attribute.</li>
+    <li>Attribute rate of change is compared on a year-to-year basis for each attribute.</li>
     <li>The gentrification criteria in the article performs this logic on a citywide basis. We've elected to do countywide for simpler JSON representation.</li>
-    <li>Gentrification is not <em>heterogeneous</em> in our visualization. For the heatmap, levels of gentrification is mapped to a color gradient based on a baseline.</li>
+    <li>Gentrification is not <em>binary</em> in our visualization. For the heatmap, levels of gentrification is mapped to a color gradient based on a formula.</li>
   </ul>
 
   <p>
-    And thus we arrive at a formula for computing a "coefficient of gentrification" for a given year, to allow the heatmap to really shine. A tract is considered gentrified for the year if:
+    And thus we arrive at a formula for computing a "coefficient of gentrification" for a census tract in a given year, to allow the heatmap to really shine. 
+    A tract's gentrification coefficient for the year is calculated with the following steps:
   </p>
 
   <ol>
 
     <li>
-    \(\forall X_n \text{, where} ~ n = {1, 2, 3, 4, 5}\)
+    \(\forall X_n \text{, where} ~ n = {1, 2, 3, 4, 5}\). See the table for \( n \) labels.
     </li>
 
     <li>
-    \( X_n \) corresponds to attribute n for the census tract for the given year
+    \( X_n \) corresponds to attribute n for the census tract for the current year
     </li>
 
     <li>
@@ -129,11 +144,11 @@
     </li>
 
     <li>
-      \( \overline{X}_n\) is the county average for attribute n in the current year 
+      \( \tilde{X}_n\) is the county median for attribute n in the current year 
     </li>
 
     <li>
-    \(\overline{x}_n\) is the county average for attribute n in the previous year
+    \(\tilde{x}_n\) is the county median for attribute n in the previous year
     </li>
 
     <li>
@@ -141,58 +156,60 @@
     </li>
 
     <li>
-    \( \overline{G}_n = \frac{\overline{X}_n}{\overline{x}_n} \)
+    \( \tilde{G}_n = \frac{\tilde{X}_n}{\tilde{x}_n} \)
     </li>
 
     <li>
-    \( \text{if} ~ \frac{G_n}{\overline{G}_n} > 1 ~ \text{, then n is a gentrifiable attribute for the census tract} \)
+    \( \text{if} ~ \frac{G_n}{\tilde{G}_n} > 1 ~ \text{, then n is a gentrifiable attribute for the census tract} \)
     </li>
 
     
     <li>
       Note this is slightly different for educational attainment, which is a decrease in percentage, 
-      so this attribute \(n\) is a gentrifying attribute if \( \frac{G_n}{\overline{G}_n} < 1 \)
+      so this attribute \(n\) is a gentrifying attribute if \( \frac{G_n}{\tilde{G}_n} < 1 \)
     </li>
 
     <li>
       To make educational attainment compatible, a logarithm is used on fractional values to normalize
       the scale. To keep all values positive, the logarithm for educational attainment is flipped, since
-      \( - \log (\frac{G_n}{\overline{G}_n} ) \) = \( \log ( \frac{\overline{G}_n}{G_n} ) \). Otherwise
+      \( - \log (\frac{G_n}{\tilde{G}_n} ) \) = \( \log ( \frac{\tilde{G}_n}{G_n} ) \). Otherwise
       educaional attainment would be negative for the formula below.
     </li>
 
     <li>
       The measure of gentrification can thus be determined as the average <em> of the log </em> of 
       gentrifying attributes, \(M\), where 
-      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(\frac{G_n}{\overline{G}_n}) \). 
+      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(\frac{G_n}{\tilde{G}_n}) \). 
       So the more attributes that are gentrifiable, the greater the gentrification measurement of the 
-      tract, and educational attainment is accounted for (while also suppressing significant outliers).
+      tract, and educational attainment is accounted for (it has the additional benefit of 
+      suppressing significant outliers).
     </li>
 
     <li>
       The final, simpler form of the equation becomes 
-      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(G_n) - \log(\overline{G}_n) \).
-      And educational attainment is \( \log(\overline{G}_n) - \log(G_n) \)
+      \( M = \frac{1}{5}\Sigma_{n = 1}^5~\log(G_n) - \log(\tilde{G}_n) \).
+      And the term for educational attainment is \( \log(\tilde{G}_n) - \log(G_n) \)
     </li>
 
     <li>
-       If \( M \leq 0 \), then the census tract has not experienced any gentrification, with \( M = 0 \) signifying the threshold. If \( M \ge 0 \), then it is gentrifying.
+      If \( M \leq 0 \), then the census tract has not experienced any gentrification, with \( M = 0 \) signifying the threshold. If \( M > 0 \), then it is gentrifying.
     </li>
 
     <li>
-      \( M \leq 0 \) maps to a white color, indicating no gentrification at all. \( M \ge 0 \) will 
+      \( M \leq 0 \) maps to a white color, indicating no gentrification at all. \( M > 0 \) will 
       be a color-spectrum from white to red, with the color red being the highest value recorded for 
-      \(M\); this is the most gentrifying census tract in the county for the given year.
+      \(M\); this is the most gentrifying census tract in the county for the given year. A gray census 
+      tract indicates the data is incomplete, which is determined if one or more of the 5 gentrification 
+      attributes are undefined (or 0).
     </li>
   </ol>
 
   <p>
     The year 2010 is our baseline, which means it will not have any measured gentrification.
     You are encouraged to start at this year for a county, and see how it changes over time into the year 2023.
-    The value M thus measures the intensity of gentrification, which is mapped to the colorscale.
     By quantifying gentrification with the heatmap, the hope is to indicate socioeconomic disparity 
     at a higher granularity. How much gentrification has occurred will be indicated year-to-year, whether or not
-    the tract is currently suffering from gentrification or not. Red indicates gentrification has "worsened" from the
+    the tract is currently suffering from gentrification. That is, red indicates gentrification has "worsened" from the
     previous year; it is not an absolute measurement of gentrification from 2010-2023.
 
   </p>
