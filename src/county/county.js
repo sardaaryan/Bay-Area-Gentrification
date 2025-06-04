@@ -1,5 +1,5 @@
+import { genScore, getYearData } from "../heatmap/heatmap.js";
 import { updateAnnotationsForYear } from './dashboards/js/annotations.js';
-
 
 const county = window.location.search.replace("%20", " ").substr(1);
 
@@ -288,5 +288,8 @@ yearSlider.onchange = function(){year = yearSlider.value; updateyearData();
 };
 
 //calculate gentrification for current year
+const yeardata = await getYearData(year,county);
+console.log(yeardata);
 //using the function genScore() from heatmap.js
+//const genVals = genScore(yeardata[0], yeardata[1]);
 //color regions
