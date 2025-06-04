@@ -292,9 +292,5 @@ yearSlider.onchange = function(){
   updateheatmap();
   renderBarChart("#barchart-container", yearData);
   
-  // Update stream graph with current tract data if a tract is selected
-  if (selectedTractId) {
-    updateTractTimeSeries(selectedTractId);
-  }
 };
 //color regions

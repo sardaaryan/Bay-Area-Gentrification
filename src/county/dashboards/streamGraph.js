@@ -39,50 +39,41 @@ let isInitialized = false;
 
 function initializeStreamGraph() {
   if (isInitialized) return;
-  
-  // Clear any existing content
-  d3.select("#streamgraph-container").selectAll("*").remove();
-  
-  svg = d3.select("#streamgraph-container")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+
+  const container = d3.select("#streamgraph-container");
+  container.selectAll("svg").remove();
+
+  // ✅ Use fixed height for reliability, dynamic width from container
+  const margin = { top: 20, right: 10, bottom: 40, left: 30 };
+  const width = container.node().clientWidth - margin.left - margin.right;
+  const height = 300;
+
+  svg = container.append("svg")
+    .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+    .attr("preserveAspectRatio", "xMidYMid meet")
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
   stack = d3.stack()
     .keys(keys)
     .order(d3.stackOrderNone)
-    .offset(d3.stackOffsetWiggle);
+    .offset(d3.stackOffsetNone);
 
   x = d3.scaleLinear().range([0, width]);
   y = d3.scaleLinear().range([height, 0]);
 
   area = d3.area()
-    .x(function(d) { return x(d.data.Year); })
-    .y0(function(d) { return y(d[0]); })
-    .y1(function(d) { return y(d[1]); });
+    .x(d => x(d.data.Year))
+    .y0(d => y(d[0]))
+    .y1(d => y(d[1]));
 
   createLegend();
-  showPrompt();
   isInitialized = true;
 }
 
-function showPrompt() {
-  svg.selectAll("*").remove();
-  
-  svg.append("text")
-    .attr("x", width / 2)
-    .attr("y", height / 2)
-    .attr("text-anchor", "middle")
-    .attr("dominant-baseline", "central")
-    .style("font-family", "Helvetica, Arial, sans-serif")
-    .style("font-size", "16px")
-    .style("fill", "#666")
-    .text("Click on a census tract to inspect its attributes over the years");
-}
 
 function updateStreamGraph(tractData) {
+  const baselineY = y(0);
   console.log("tractData sample:", tractData[0]);
   if (!isInitialized) {
     initializeStreamGraph();
@@ -133,14 +124,14 @@ function updateStreamGraph(tractData) {
 
   // Add axes
   svg.append("g")
-    .attr("transform", `translate(0,${height})`)
-    .attr("class", "axis")
+    .attr("transform", `translate(0,${baselineY})`)
+    .attr("class", "axis axis-x")
     .call(d3.axisBottom(x).tickFormat(d3.format("d")))
     .style("font-family", "Helvetica, Arial, sans-serif")
     .style("font-size", "12px");
 
   svg.append("g")
-    .attr("class", "axis")
+    .attr("class", "axis axis-x")
     .call(d3.axisLeft(y))
     .style("font-family", "Helvetica, Arial, sans-serif")
     .style("font-size", "12px");
@@ -155,8 +146,8 @@ function createLegend() {
     .style("flex-wrap", "wrap")
     .style("justify-content", "center")
     .style("gap", "6px")
-    .style("margin-top", "-10px")
-    .style("margin-bottom", "25px");
+    .style("margin-top", "5px")
+    .style("margin-bottom", "5px");
 
   const legendItems = legendContainer.selectAll(".legend-item")
     .data(color.domain())
