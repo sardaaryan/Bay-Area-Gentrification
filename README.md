@@ -26,21 +26,21 @@ The repository consists of the following components:
     13.  Make sure this CSV file is then moved to the `src/data/` directory, creating it if necessary.
     14.  Repeat steps 2-13 until there is 6 CSV files in `src/data/`. This is the complete preprocessed dataset.
     15.  Now take a break. You've earned it!
-</details>
+  </details>
 
 - `map_preprocess/`: this folder contains preprocessing logic used to get the topo.json files to the form currently seen (to draw their SVG's).
 
 - `reports/`: All the source code for the LaTeX reports written for this project. The proposal report is in `proposal/`, the progress report is in `progress/`, and the final report in the `final/` subdirectory. You can compile a PDF of any of these reports with the following steps:
 
-<details>
-<summary>compiling a LaTeX report</summary>
+  <details>
+  <summary>compiling a LaTeX report</summary>
 
-  1. Navigate to the given parent subdirectory (`proposal/` for the proposal report, and so on) 
-  2. Use [this Dropbox link](https://www.dropbox.com/scl/fi/1mdkwptqvdwjf6t91ekvv/imgs.zip?rlkey=94rwuuueltidle266ql889hvw&st=52qckpk2&dl=1) to download `imgs.zip` immediately. Make sure it is unzipped in `reports/`, not the parent subdirectory. Do not change it's name or contents. This only needs to be done once for all reports!
-  3. Use whichever approach you desire to compile main.tex. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
-  4. Apply these steps to any of LaTeX reports.
+    1. Navigate to the given parent subdirectory (`proposal/` for the proposal report, and so on) 
+    2. Use [this Dropbox link](https://www.dropbox.com/scl/fi/1mdkwptqvdwjf6t91ekvv/imgs.zip?rlkey=94rwuuueltidle266ql889hvw&st=52qckpk2&dl=1) to download `imgs.zip` immediately. Make sure it is unzipped in `reports/`, not the parent subdirectory. Do not change it's name or contents. This only needs to be done once for all reports!
+    3. Use whichever approach you desire to compile main.tex. We used `pdflatex main.tex` followed by `bibtex main` (to generate the references), and one more `pdflatex main.tex`. The report will be `main.pdf`.
+    4. Apply these steps to any of LaTeX reports.
 
-</details>
+  </details>
 
 - `src/` contains all of the code of our implementation. We break down it's structure next.
     - (NEED TO FINISH `src/`!!) <- this will be pretty long
