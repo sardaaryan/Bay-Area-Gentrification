@@ -137,12 +137,7 @@ function init() {
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
 
-
-
-
-
 // Timeline Annotations
-
 const allAnnotations = {
   "2010": [
         "Apple introduces the tablet computer iPad that sells one million units in less than one month",
