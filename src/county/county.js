@@ -21,12 +21,13 @@ const countyids = {
 
 let data = []; //data has all data for current county across all years. ALL DATA FOR COUNTY
 let yearData = []; //data filtered to current year on year slider. HEATMAP + BAR CHART
+let prevYearData = [] //data filtered for current year
 let tractData = []; //data filtered to specific tract based on heatmap click. STREAM GRAPH
 
 const attributeFiles = [
   { file: "../data/edu_attain.csv", column: "25_Plus_Bachelors_Degree_Or_Higher_Count" },
   { file: "../data/gross_rent.csv", column: "Median_Gross_Rent" },
-  { file: "../data/home_value.csv", column: "Median Value" },
+  { file: "../data/home_value.csv", column: "Median_Home_Value" },
   { file: "../data/house_income.csv", column: "Median_Household_Income" },
   { file: "../data/total_pop.csv", column: "Estimate!!Total" },
 ];
@@ -37,7 +38,12 @@ const filteredData = new Map(); // key = TractID_Year
 //HELPER FUNCTIONS
 
 function updateyearData() {
-  yearData = data.filter((d) => d.Year === year);
+  yearData = data.filter((d) => String(d.Year) === String(year));
+  if (String(year) === "2010") {
+    prevYearData = [];
+  } else {
+    prevYearData = data.filter((d) => String(d.Year) === String(Number(year) - 1));
+  }
 }
 
 function updateTractTimeSeries(tractID) {
@@ -52,6 +58,43 @@ function preprocessTractID(id){
     if(id.length == 4) return id+'00';
     if(id.length == 5) return '0'+id;
     return id.replace(".", "");
+}
+
+//Helpers for heatmap
+function updateregions(scores) {
+  // D3 v5 color scale for reds
+  const colorScale = d3.scaleSequential()
+    .domain([0, d3.max(scores, d => d && typeof d.score === "number" ? d.score : 0) || 1])
+    .interpolator(d3.interpolateReds);
+
+  svg.selectAll("path")
+    .attr("fill", (d) => {
+      const tractId = d.properties.id.substr(5).trim();
+      const scoreObj = scores.find(s => s.tractId === tractId);
+      if (scoreObj && typeof scoreObj.score === "number" && scoreObj.score > 0) {
+        return colorScale(scoreObj.score);
+      } else if (scoreObj && typeof scoreObj.score === "undefined") {
+        return "#ccc"; // Gray for incomplete data
+      } else {
+        return "#fff"; // White for no gentrification or missing
+      }
+    })
+    .attr("stroke", "#222") 
+    .attr("stroke-width", 0.5);
+}
+//calculate gentrification for current year
+function updateheatmap() {
+  updateyearData();
+  if (prevYearData.length > 0) {
+    const scores = genScore(prevYearData, yearData); 
+    console.log("scores ",scores);
+    updateregions(scores);
+    
+  } else {
+    const scores = []; // no valid data
+    updateregions(scores);
+  }
+  
 }
 
 // Load and merge all CSVs
@@ -127,12 +170,15 @@ function init() {
         .on('click', function(d) {
             const id = d.properties.id.substr(5).trim();
             updateTractTimeSeries(id);
+            console.log(tractData);
         });
 
     svg.append("g").attr("style", "font-family: 'Lato';");
+    //called heatmap here bc need to wait for svg to load and loads on page open
+    updateheatmap();
   });
-
   console.log(yearData, tractData);
+  
 }
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
@@ -280,8 +326,6 @@ yearSlider.addEventListener("input", () => {
 
 yearSlider.onchange = function(){year = yearSlider.value; updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
+  updateheatmap();
 };
-
-//using the function genScore() from heatmap.js
-//const genVals = genScore(yeardata[0], yeardata[1]);
 //color regions
