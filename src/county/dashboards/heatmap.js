@@ -8,7 +8,6 @@ export function genScore(prev, curr) {
     "Vacant Units",                       
     "25_Plus_Bachelors_Degree_Or_Higher_Count"
   ];
-
   // Create lookup tables for previous by tract ID
   const prevByTract = Object.fromEntries(prev.map(d => [d["Tract ID"], d]));
 
@@ -59,7 +58,7 @@ export function genScore(prev, curr) {
         isNaN(Xn) || isNaN(xn) || isNaN(Xn_med) || isNaN(xn_med) ||
         Xn <= 0 || xn <= 0 || Xn_med <= 0 || xn_med <= 0
       ) {
-        //console.log(Xn, xn, Xn_med, xn_med)
+        console.log(Xn, xn, Xn_med, xn_med)
         undefinedAttrs.push(attr);
         invalid = true;
       }
@@ -71,7 +70,8 @@ export function genScore(prev, curr) {
         score: undefined,
         undefinedAttrs
       });
-      //console.log(undefinedAttrs)
+      //console.log(result)
+      console.log(undefinedAttrs)
       continue;
     }
 
