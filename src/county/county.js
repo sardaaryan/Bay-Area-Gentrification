@@ -123,7 +123,6 @@ function updateregions(colorScale, scores) {
 function drawHeatmapLegend(colorScale, minVal, maxVal) {
 
   if (colorScale === 0) {
-    // Display a message in the legend container and return
     d3.select("#heatmap-legend-container")
       .append("div")
       .style("padding", "10px")
@@ -133,10 +132,10 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
   const legendHeight = 200;
   const legendWidth = 20;
   const legendMargin = { top: 20, right: 30 };
-  
+
   const legendSvg = d3.select("#heatmap-legend-container")
     .append("svg")
-    .attr("viewBox", `0 0 80 ${legendHeight + legendMargin.top * 2}`)
+    .attr("viewBox", `0 0 80 ${legendHeight + legendMargin.top * 2 + 60}`)
     .attr("width", "100%")
     .attr("height", "100%")
     .attr("preserveAspectRatio", "xMinYMin meet");
@@ -147,7 +146,7 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
     .attr("y", legendMargin.top - 10)
     .attr("font-size", "8px")
     .attr("font-weight", "bold")
-    .attr("text-anchor", "middle") // <-- Add this line to center the text
+    .attr("text-anchor", "middle")
     .text("Gentrification Score");
 
   const gradientId = "heatmap-gradient";
@@ -182,7 +181,7 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
   // Add scale
   const legendScale = d3.scaleLinear()
     .domain([minVal, maxVal])
-    .range([legendMargin.top, legendMargin.top+ legendHeight]);
+    .range([legendMargin.top, legendMargin.top + legendHeight]);
 
   // Ensure min and max are included as ticks and all are evenly spaced
   const numTicks = 8; // includes min and max
@@ -194,11 +193,29 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
     .tickValues(tickValues)
     .tickFormat(d3.format(".2f"));
 
-
   legendSvg.append("g")
     .attr("transform", `translate(${legendMargin.right + legendWidth},0)`)
     .call(legendAxis);
-    
+
+  // Add gray square and label for NA under the gradient
+  
+  const naX = legendMargin.right;
+  const naY = legendMargin.top + legendHeight + 20;
+
+  legendSvg.append("rect")
+    .attr("x", naX)
+    .attr("y", naY)
+    .attr("width", 18)
+    .attr("height", 18)
+    .attr("fill", "#ccc")
+    .attr("stroke", "#000");
+
+  legendSvg.append("text")
+    .attr("x", naX + 24)
+    .attr("y", naY + 13)
+    .attr("font-size", "10px")
+    .attr("alignment-baseline", "middle")
+    .text("NA");
 }
 
 function getTractScores(){
