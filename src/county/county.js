@@ -270,11 +270,11 @@ function updateheatmap() {
 // Load and merge all CSVs
 Promise.all(attributeFiles.map((d) => d3.csv(d.file))).then((datasets) => {
   const keys = attributeFiles.map((d) => d.column);
-
+  
   // Merge all datasets (all single-attribute)
   datasets.forEach((data, i) => {
     data.forEach((d) => {
-      if (d.County === county) {
+      if (d.County.trim() === county) {
         const key = `${d["Tract ID"]}_${d["Year"]}`;
         if (!filteredData.has(key)) {
           filteredData.set(key, {
@@ -286,9 +286,10 @@ Promise.all(attributeFiles.map((d) => d3.csv(d.file))).then((datasets) => {
       }
     });
   });
-
+  
   // Convert to global array
   data = Array.from(filteredData.values());
+  console.log(data);
   updateyearData();
   init();
 });
