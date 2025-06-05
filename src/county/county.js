@@ -12,7 +12,7 @@ const width = 960, height = 600;
 
 let data = []; //data has all data for current county across all years. ALL DATA FOR COUNTY
 let yearData = []; //data filtered to current year on year slider. HEATMAP + BAR CHART
-let prevYearData = [] //data filtered for current year
+let Scores = []; //holds score data for all years
 let tractData = []; //data filtered to specific tract based on heatmap click. STREAM GRAPH
 let selectedTractId = null; // Track currently selected tract
 
@@ -21,11 +21,6 @@ const filteredData = new Map(); // key = TractID_Year
 //HELPER FUNCTIONS
 function updateyearData() {
   yearData = data.filter((d) => String(d.Year) === String(year));
-  if (String(year) === "2010") {
-    prevYearData = [];
-  } else {
-    prevYearData = data.filter((d) => String(d.Year) === String(Number(year) - 1));
-  }
 }
 
 function updateTractTimeSeries(tractID) {
@@ -100,12 +95,8 @@ function preprocessTractID(id){
 }
 
 //Helpers for heatmap
-function updateregions(scores) {
-  // D3 v5 color scale for reds
-  const colorScale = d3.scaleSequential()
-    .domain([0, d3.max(scores, d => d && typeof d.score === "number" ? d.score : 0) || 1])
-    .interpolator(d3.interpolateReds);
-
+function updateregions(colorScale, scores) {
+  console.log("scores", scores)
   svg.selectAll("path")
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
@@ -127,20 +118,125 @@ function updateregions(scores) {
     highlightSelectedTract(selectedTractId);
   }
 }
+// Add vertical color legend
+function drawHeatmapLegend(colorScale, minVal, maxVal) {
 
-//calculate gentrification for current year
-function updateheatmap() {
-  updateyearData();
-  if (prevYearData.length > 0) {
-    const scores = genScore(prevYearData, yearData); 
-    //console.log("scores ",scores);
-    updateregions(scores);
+  if (colorScale === 0) {
+    // Display a message in the legend container and return
+    d3.select("#legend-container")
+      .append("div")
+      .style("padding", "10px")
+      .text("NA :)");
+    return;
+  }
+  const legendHeight = 200;
+  const legendWidth = 20;
+  const legendMargin = { top: 20, right: 30 };
+  
+  const legendSvg = d3.select("#legend-container")
+    .append("svg")
+    .attr("width", 80)
+    .attr("height", legendHeight + legendMargin.top * 2);
+
+  const gradientId = "heatmap-gradient";
+
+  // Define gradient
+  const defs = legendSvg.append("defs");
+  const linearGradient = defs.append("linearGradient")
+    .attr("id", gradientId)
+    .attr("x1", "0%")
+    .attr("y1", "0%")
+    .attr("x2", "0%")
+    .attr("y2", "100%");
+
+  const numStops = 10;
+  const step = 1 / (numStops - 1);
+  d3.range(numStops).forEach(i => {
+    const t = i * step;
+    linearGradient.append("stop")
+      .attr("offset", `${t * 100}%`)
+      .attr("stop-color", colorScale(minVal + t * (maxVal - minVal)));
+  });
+
+  // Draw color bar
+  legendSvg.append("rect")
+    .attr("x", legendMargin.right)
+    .attr("y", legendMargin.top)
+    .attr("width", legendWidth)
+    .attr("height", legendHeight)
+    .style("fill", `url(#${gradientId})`)
+    .style("stroke", "#000");
+
+  // Add scale
+  const legendScale = d3.scaleLinear()
+    .domain([minVal, maxVal])
+    .range([legendMargin.top, legendMargin.top+ legendHeight]);
+
+  // Ensure min and max are included as ticks and all are evenly spaced
+  const numTicks = 8; // includes min and max
+  const tickValues = d3.range(numTicks).map(i =>
+    minVal + (i / (numTicks - 1)) * (maxVal - minVal)
+  );
+
+  const legendAxis = d3.axisRight(legendScale)
+    .tickValues(tickValues)
+    .tickFormat(d3.format(".2f"));
+
+
+  legendSvg.append("g")
+    .attr("transform", `translate(${legendMargin.right + legendWidth},0)`)
+    .call(legendAxis);
     
+}
+
+function getTractScores(){
+  // Collect scores for each year from 2011 to 2023
+  const heatmapYearScores = [];
+  const years = Array.from(new Set(data.map(d => +d.Year))).sort((a, b) => a - b);
+  //loop through each year from 2011-2023 and call genScore
+  for (let i = 1; i < years.length; i++) {
+    //on each iteration assign the previous year data and current year data to variables 
+    const prevYear = years[i - 1];
+    const currYear = years[i];
+    const prevYearData = data.filter(d => +d.Year === prevYear);
+    const currYearData = data.filter(d => +d.Year === currYear);
+
+    //call genScore with the two variables and save to a variable called scores
+    const scores = genScore(prevYearData, currYearData);
+
+    // Add year property to each score object
+    scores.forEach(s => s.year = currYear);
+
+    // Append all scores for this year
+    heatmapYearScores.push(...scores);
+  }
+  return heatmapYearScores;
+}
+
+function updateheatmap() {
+  //stop calling every damn slider change
+  console.log("ALL scores",Scores);
+  d3.select("#legend-container").selectAll("*").remove(); // clear previous legend
+  if (year != "2010") {
+    // filter Scores for the current year
+    const scores = Scores.filter(s => String(s.year) === String(year));
+    // call d3.max on all the years for the max value of the gradients
+    const maxScore = d3.max(Scores, d => d && typeof d.score === "number" ? d.score : 0);
+    // create the color map with the max
+    const colorScale = d3.scaleSequential()
+      .domain([0, maxScore])
+      .interpolator(d3.interpolateReds);
+
+    // call updateregions passing in the colorScale
+    updateregions(colorScale, scores);
+
+    drawHeatmapLegend(colorScale, 0, maxScore);
   } else {
-    const scores = []; // no valid data
-    updateregions(scores);
+    updateregions(d3.scaleSequential().domain([0, 0]).interpolator(d3.interpolateReds),[]);
+    drawHeatmapLegend(0, 0, 0);
   }
 }
+
 
 // Load and merge all CSVs
 Promise.all(attributeFiles.map((d) => d3.csv(d.file))).then((datasets) => {
@@ -265,6 +361,7 @@ function init() {
 
     svg.append("g").attr("style", "font-family: 'Lato';");
     //called heatmap here bc need to wait for svg to load and loads on page open
+    Scores = getTractScores();
     updateheatmap();
     // After heatmap is updated, NOW we update the barchart
     renderBarChart("#barchart-container", yearData); 

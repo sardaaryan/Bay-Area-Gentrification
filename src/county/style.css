@@ -26,6 +26,32 @@ body {
   margin-top: 10px;
 }
 
+.heatmap-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-bottom: 20px;
+}
+
+#heatmap {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#legend-container {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 8px 10px;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  font-size: 16px;
+  color: #333;
+  z-index: 2;
+}
+
 /* Slider Styling*/
 .slider-container {
   align-self: center;
