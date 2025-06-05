@@ -1,4 +1,3 @@
-
 // Constants
 const width = 960, height = 600;
 const bayAreaCountyIDs = [6001, 6013, 6041, 6055, 6075, 6081, 6085, 6095, 6097];
@@ -68,7 +67,8 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
     .on("mouseover", function (d) {
       const name = d.properties.name;
 
-      d3.select(this).raise();
+      d3.select(this)
+        .attr("fill", "#B3697A"); // Highlight color
 
       htmlTooltip
         .style("opacity", 1)
@@ -80,6 +80,9 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
         .style("top", (d3.event.pageY + 25) + "px");
     })
     .on("mouseout", function () {
+      d3.select(this)
+        .attr("fill", "#69b3a2"); // Reset to original color
+
       htmlTooltip.style("opacity", 0);
     })
     .on('click', function(d) {
@@ -87,7 +90,26 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
         window.open(`../county/county.html?${name}`, "_self"); // Opens county.html and queries county name
     });
 
-
+  // Add county names as a separate SVG group so they are always on top
+  svg.append("g")
+    .attr("class", "county-labels")
+    .selectAll("text")
+    .data(counties.features)
+    .enter()
+    .append("text")
+    .attr("x", d => {
+      const centroid = path.centroid(d);
+      return centroid[0];
+    })
+    .attr("y", d => {
+      const centroid = path.centroid(d);
+      return centroid[1];
+    })
+    .attr("text-anchor", "middle")
+    .attr("alignment-baseline", "central")
+    .attr("pointer-events", "none")
+    .attr("class", "county-label")
+    .text(d => d.properties.name === "San Francisco" ? "SF" : d.properties.name);
 
   //yield svg.node();
 

@@ -14,9 +14,15 @@
   <script src="https://unpkg.com/topojson@3"></script>
 </head>
 <body>
+  <!-- Map Description -->
+  <div id="map-description">
+    <strong>California Bay Area Counties Map</strong><br>
+    Hover over a county to highlight it and see its name.<br>
+    Click a county to view more details.
+  </div>
   <!-- D3 Visualization Element -->
-    <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
-    <div id="tooltip" style="opacity: 0;"></div>
-    <script src="vis.js"></script>
-  </body>
+  <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
+  <div id="tooltip" style="opacity: 0;"></div>
+  <script src="vis.js"></script>
+</body>
 </html>
