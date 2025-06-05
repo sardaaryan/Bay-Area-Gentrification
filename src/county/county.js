@@ -1,6 +1,6 @@
 import { genScore} from "./dashboards/heatmap.js";
 import { updateAnnotationsForYear } from './dashboards/annotations.js';
-import { renderBarChart } from './dashboards/barChart.js';
+import { renderMedianTable } from './dashboards/medianTable.js';
 import { initializeStreamGraph, updateStreamGraph } from './dashboards/streamGraph.js';
 import { countyids, attributeFiles, allAnnotations } from './values.js';
 
@@ -267,7 +267,7 @@ function init() {
     //called heatmap here bc need to wait for svg to load and loads on page open
     updateheatmap();
     // After heatmap is updated, NOW we update the barchart
-    renderBarChart("#barchart-container", yearData); 
+    renderMedianTable("#med-table-container", yearData); 
   });
   //console.log(yearData, tractData);
 }
@@ -290,11 +290,7 @@ yearSlider.onchange = function(){
   updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
   updateheatmap();
-  renderBarChart("#barchart-container", yearData);
+  renderMedianTable("#med-table-container", yearData);
   
-  // Update stream graph with current tract data if a tract is selected
-  if (selectedTractId) {
-    updateTractTimeSeries(selectedTractId);
-  }
 };
 //color regions
