@@ -28,14 +28,14 @@ function updateTractTimeSeries(tractID) {
   selectedTractId = tractID;
   
   // Debug: Log the tract ID and available tract IDs in data
-  console.log("Selected tract ID:", tractID);
-  console.log("Available tract IDs in data:", [...new Set(data.map(d => d["Tract ID"]))].slice(0, 10));
+  //console.log("Selected tract ID:", tractID);
+  //console.log("Available tract IDs in data:", [...new Set(data.map(d => d["Tract ID"]))].slice(0, 10));
   
   tractData = data
     .filter(d => d["Tract ID"] === tractID)
     .sort((a, b) => +a.Year - +b.Year);
   
-  console.log("Filtered tract data:", tractData.length, "records");
+  //console.log("Filtered tract data:", tractData.length, "records");
   
   // Update stream graph with new tract data
   updateStreamGraph(tractData);
@@ -97,7 +97,7 @@ function preprocessTractID(id){
 
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
-  console.log("scores", scores)
+  //console.log("scores", scores)
   mapGroup.selectAll("path")
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
@@ -244,7 +244,7 @@ function getTractScores(){
 
 function updateheatmap() {
   //stop calling every damn slider change
-  console.log("ALL scores",Scores);
+  //console.log("ALL scores",Scores);
   d3.select("#heatmap-legend-container").selectAll("*").remove(); // clear previous legend
   if (year != "2010") {
     // filter Scores for the current year
@@ -350,8 +350,8 @@ function init() {
     //Debug: //Debug: console.log(tracts);
 
     // Debug: Log the structure of the first tract feature
-    console.log("Sample tract feature:", tracts.features[0]);
-    console.log("Sample tract properties:", tracts.features[0]?.properties);
+    //console.log("Sample tract feature:", tracts.features[0]);
+    //console.log("Sample tract properties:", tracts.features[0]?.properties);
 
     // Draw counties
     mapGroup.selectAll("path").data(tracts.features).enter().append("path")
@@ -362,8 +362,8 @@ function init() {
         .style("cursor", "pointer")
         .on('click', function(d) {
             // In D3 v5, the data is the first parameter, not second
-            console.log("Clicked tract feature:", d);
-            console.log("Tract properties:", d ? d.properties : 'undefined');
+            //console.log("Clicked tract feature:", d);
+            //console.log("Tract properties:", d ? d.properties : 'undefined');
             
             if (!d || !d.properties) {
                 console.error("No properties found on clicked tract");
@@ -380,7 +380,7 @@ function init() {
                 id = (d.properties.tractce || d.properties.TRACTCE).toString();
             }
             
-            console.log("Extracted tract ID:", id);
+            //console.log("Extracted tract ID:", id);
             updateTractTimeSeries(id);
         })
         .on('mouseover', function(d) {
