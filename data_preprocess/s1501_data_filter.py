@@ -1,24 +1,15 @@
 import pandas as pd
-import re
 import os
 
 def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023, output_filename="edu_attain.csv"):
     """
-    Cleans and processes ACS educational attainment data for Bay Area census tracts.
-    Specifically calculates the count of population 25+ with a Bachelor's degree or higher.
-    Aggregates by taking the mean for split tracts.
-    Handles different variable names/sums across different year ranges,
-    using S-code mapping for older files with duplicate descriptive headers.
-
-    Args:
-        start_year (int): The starting year for the data files (e.g., 2010).
-        end_year (int): The ending year for the data files (e.g., 2023).
-        output_filename (str): The name of the combined and cleaned output CSV file.
+    Processes ACS educational attainment data from 2010–2023 for Bay Area census tracts.
+    Uses S-code headers (first row only) to calculate:
+    - 2010–2018: Raw count from S1501_C01_015E.
+    - 2019–2023: Proportion from S1501_C01_015E / S1501_C01_006E.
     """
 
     all_years_data = []
-
-    # Standardized name for the final output column
     STANDARD_EDU_ATTAIN_NAME = "25_Plus_Bachelors_Degree_Or_Higher_Count"
 
     for year in range(start_year, end_year + 1):
@@ -26,119 +17,64 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
         print(f"Processing {file_name} for year {year}...")
 
         if not os.path.exists(file_name):
-            print(f"Warning: {file_name} not found. Skipping this year.")
+            print(f"Warning: {file_name} not found. Skipping.")
             continue
 
-        # --- Read the CSV with header=1 for descriptive column names ---
-        df = pd.read_csv(file_name, header=1)
+        # Read with only the S-code header (first row)
+        df = pd.read_csv(file_name, header=0, low_memory=False)
 
-        # 1) Drop "Geography" variables (if present)
-        if 'Geography' in df.columns:
-            df = df.drop(columns=['Geography'])
+        # Drop 'GEO_ID' if present (no longer needed for tract/county parsing)
+        df = df.drop(columns=['GEO_ID'], errors='ignore')
 
-        # 2) Turn "Geographic Area Name" into Tract ID and County
-        split_data = df['Geographic Area Name'].str.split(r'[,;]', expand=True)
-        
-        df['Tract ID Raw'] = split_data[0].str.strip()
-        df['County Raw'] = split_data[1].str.strip() if 1 in split_data.columns else None
+        # Use 'NAME' column to extract Tract ID and County
+        if 'NAME' not in df.columns:
+            print(f"Missing expected 'NAME' column in {file_name}. Skipping.")
+            continue
 
-        df['Tract ID'] = df['Tract ID Raw'].str.replace('Census Tract ', '', regex=False)
-        df['County'] = df['County Raw'].str.replace(' County', '', regex=False).fillna('')
-
-        # Add the "Year" variable
+        split_data = df['NAME'].str.split(r'[,;]', expand=True)
+        df['Tract ID'] = split_data[0].str.replace('Census Tract ', '', regex=False)
+        df['County'] = split_data[1].str.replace(' County', '', regex=False).fillna('')
         df['Year'] = year
 
-        # Create a DataFrame to hold the parsed data for the current year
-        current_year_parsed_data = pd.DataFrame()
-        current_year_parsed_data['Tract ID'] = df['Tract ID']
-        current_year_parsed_data['County'] = df['County']
-        current_year_parsed_data['Year'] = df['Year']
-
-        # --- Dynamic Educational Attainment Calculation (Bachelor's Degree or Higher Count) ---
-        bachelors_or_higher_count = None
-
-        if 2010 <= year <= 2012:
-            # For these years, we need to use S-codes to find the specific descriptive columns
-            # due to potential duplicate descriptive names.
-            
-            # Read just the S-code row and the descriptive name row to create a mapping
-            header_map_df = pd.read_csv(file_name, header=None, nrows=2)
-            
-            # Create a dictionary mapping S-code to descriptive name
-            s_code_to_desc = {s_code: desc for s_code, desc in zip(header_map_df.iloc[0], header_map_df.iloc[1])}
-            
-            # Get the exact descriptive column names using the specified S-codes
-            bachelor_desc_col = s_code_to_desc.get("S1501_C01_012E")
-            grad_prof_desc_col = s_code_to_desc.get("S1501_C01_013E")
-            
-            if bachelor_desc_col and grad_prof_desc_col and \
-               bachelor_desc_col in df.columns and grad_prof_desc_col in df.columns:
-                
-                bachelor_count = pd.to_numeric(df[bachelor_desc_col], errors='coerce').fillna(0)
-                grad_prof_count = pd.to_numeric(df[grad_prof_desc_col], errors='coerce').fillna(0)
-                bachelors_or_higher_count = bachelor_count + grad_prof_count
+        # Pull the variable(s) depending on year
+        if 2010 <= year <= 2017:
+            if 'S1501_C01_015E' in df.columns:
+                edu_value = pd.to_numeric(df['S1501_C01_015E'], errors='coerce').fillna(0)
             else:
-                print(f"Warning: Could not find explicit columns via S-code mapping for {year} ({bachelor_desc_col}, {grad_prof_desc_col}). Will use 0 for this year's count.")
-        elif 2013 <= year <= 2016:
-            bachelor_col = "Total!!Estimate!!Population 25 years and over!!Bachelor's degree"
-            grad_prof_col = "Total!!Estimate!!Population 25 years and over!!Graduate or professional degree"
-            
-            if bachelor_col in df.columns and grad_prof_col in df.columns:
-                bachelor_count = pd.to_numeric(df[bachelor_col], errors='coerce').fillna(0)
-                grad_prof_count = pd.to_numeric(df[grad_prof_col], errors='coerce').fillna(0)
-                bachelors_or_higher_count = bachelor_count + grad_prof_count
+                print(f"Missing column S1501_C01_015E for {year}. Using 0.")
+                edu_value = pd.Series([0] * len(df))
+        elif 2018 <= year <= 2023:
+            if 'S1501_C01_015E' in df.columns and 'S1501_C01_006E' in df.columns:
+                numerator = pd.to_numeric(df['S1501_C01_015E'], errors='coerce').fillna(0)
+                denominator = pd.to_numeric(df['S1501_C01_006E'], errors='coerce').replace(0, pd.NA)
+                edu_value = pd.to_numeric((numerator / denominator) * 100, errors='coerce').fillna(0)
             else:
-                print(f"Warning: Missing one or both expected columns for {year} ({bachelor_col}, {grad_prof_col}) in {file_name}. Will use 0 for this year's count.")
-        elif 2017 <= year <= 2018:
-            bachelor_col = "Estimate!!Total!!Population 25 years and over!!Bachelor's degree"
-            grad_prof_col = "Estimate!!Total!!Population 25 years and over!!Graduate or professional degree"
-            
-            if bachelor_col in df.columns and grad_prof_col in df.columns:
-                bachelor_count = pd.to_numeric(df[bachelor_col], errors='coerce').fillna(0)
-                grad_prof_count = pd.to_numeric(df[grad_prof_col], errors='coerce').fillna(0)
-                bachelors_or_higher_count = bachelor_count + grad_prof_count
-            else:
-                print(f"Warning: Missing one or both expected columns for {year} ({bachelor_col}, {grad_prof_col}) in {file_name}. Will use 0 for this year's count.")
-        elif 2019 <= year <= 2023:
-            bachelor_col = "Estimate!!Total!!AGE BY EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Bachelor's degree"
-            grad_prof_col = "Estimate!!Total!!AGE BY EDUCATIONAL ATTAINMENT!!Population 25 years and over!!Graduate or professional degree"
-            
-            if bachelor_col in df.columns and grad_prof_col in df.columns:
-                bachelor_count = pd.to_numeric(df[bachelor_col], errors='coerce').fillna(0)
-                grad_prof_count = pd.to_numeric(df[grad_prof_col], errors='coerce').fillna(0)
-                bachelors_or_higher_count = bachelor_count + grad_prof_count
-            else:
-                print(f"Warning: Missing one or both expected columns for {year} ({bachelor_col}, {grad_prof_col}) in {file_name}. Will use 0 for this year's count.")
-        
-        # Assign the calculated count, filling any remaining NaNs with 0
-        current_year_parsed_data[STANDARD_EDU_ATTAIN_NAME] = bachelors_or_higher_count.fillna(0) if bachelors_or_higher_count is not None else 0
+                print(f"Missing column(s) for {year}. Using 0.")
+                edu_value = pd.Series([0] * len(df))
 
-        # Define the columns used for grouping (Base Tract ID, County, Year)
-        group_cols = ['Tract ID', 'County', 'Year']
-        
-        # Group by Base Tract ID, County, Year, and take the mean of the bachelor's degree or higher count
-        grouped_data = current_year_parsed_data.groupby(group_cols)[STANDARD_EDU_ATTAIN_NAME].mean().reset_index()
+        # Build DataFrame for this year
+        year_df = pd.DataFrame({
+            'Tract ID': df['Tract ID'],
+            'County': df['County'],
+            'Year': year,
+            STANDARD_EDU_ATTAIN_NAME: edu_value
+        })
 
-        # append the current row to all other rows
-        all_years_data.append(grouped_data)
+        # Group and take mean for split tracts
+        grouped = year_df.groupby(['Tract ID', 'County', 'Year'])[STANDARD_EDU_ATTAIN_NAME].mean().reset_index()
+        all_years_data.append(grouped)
 
     if not all_years_data:
         print("No data processed. Exiting.")
         return
 
-    # Concatenate all processed yearly data into a single DataFrame
     final_df = pd.concat(all_years_data, ignore_index=True)
-
-    # Define the final desired column order for the output CSV
-    final_columns_order = ['Tract ID', 'County', STANDARD_EDU_ATTAIN_NAME, 'Year']
-    # Select and reorder columns
-    final_df = final_df[final_columns_order]
-
-    # Save the combined DataFrame to a new CSV file
+    final_df = final_df[['Tract ID', 'County', STANDARD_EDU_ATTAIN_NAME, 'Year']]
     final_df.to_csv(output_filename, index=False)
-    print(f"\nSuccessfully processed and combined data into {output_filename}")
-    print(f"Final output shape: {final_df.shape}")
+    print(f"\nSuccessfully processed data into {output_filename}")
+    print(f"Final shape: {final_df.shape}")
 
-# --- Run the cleaning and processing function ---
+# --- Entry point ---
 if __name__ == "__main__":
     clean_and_process_educational_attainment_data()
+

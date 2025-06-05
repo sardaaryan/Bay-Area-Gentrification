@@ -67,7 +67,6 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
     .attr("stroke-width", 0.5)
     .on("mouseover", function (d) {
       const name = d.properties.name;
-      console.log(name);
 
       d3.select(this).raise();
 
@@ -76,13 +75,16 @@ d3.json("../data/filtered-counties.topo.json").then((topoData) => {
         .html(`${name} County`);
     })
     .on("mousemove", function () {
-      const [x, y] = d3.mouse(this);
       htmlTooltip
-        .style("left", (x + 25) + "px")
-        .style("top", (y + 25) + "px");
+        .style("left", (d3.event.pageX + 25) + "px")
+        .style("top", (d3.event.pageY + 25) + "px");
     })
     .on("mouseout", function () {
       htmlTooltip.style("opacity", 0);
+    })
+    .on('click', function(d) {
+        const name = d.properties.name;
+        window.open(`../county/county.html?${name}`, "_self"); // Opens county.html and queries county name
     });
 
 
