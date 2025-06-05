@@ -81,6 +81,7 @@ section {
   flex-direction: column;
   box-sizing: border-box;
   overflow-y: auto;
+  gap: 6px;
 }
 
 
@@ -104,12 +105,84 @@ section {
 
 .annotations{
     padding-top: 6px;
-    overflow-y: auto;
 }
 
-.streamgraph-container, .barchart-container {
+#timeline-annotations{
+    overflow-y: auto;
+} 
+
+.streamgraph-container, .med-table-container {
   flex: 1;
   height: 100%;
   width: 100%;
   position: relative;
+}
+
+/* Median Table: Make more responsive and readable */
+.median-table {
+  height: -webkit-fill-available;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  table-layout: fixed;
+  word-wrap: break-word;
+}
+
+.median-table thead th {
+  background-color: #f1f1f1;
+  color: #333;
+  text-align: left;
+  padding: 12px;
+  font-size: 1rem;
+  border-bottom: 2px solid #ddd;
+}
+
+.median-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+.median-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.median-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+@media screen and (max-width: 768px) {
+  .median-table thead {
+    display: none;
+  }
+
+  .median-table, .median-table tbody, .median-table tr, .median-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .median-table tr {
+    margin-bottom: 12px;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .median-table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  .median-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    width: 45%;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+  }
 }
