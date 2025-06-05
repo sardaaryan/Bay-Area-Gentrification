@@ -19,6 +19,7 @@ let selectedTractId = null; // Track currently selected tract
 
 const filteredData = new Map(); // key = TractID_Year
 
+
 //HELPER FUNCTIONS
 function updateyearData() {
   yearData = data.filter((d) => String(d.Year) === String(year));
@@ -28,14 +29,14 @@ function updateTractTimeSeries(tractID) {
   selectedTractId = tractID;
   
   // Debug: Log the tract ID and available tract IDs in data
-  console.log("Selected tract ID:", tractID);
-  console.log("Available tract IDs in data:", [...new Set(data.map(d => d["Tract ID"]))].slice(0, 10));
+  //console.log("Selected tract ID:", tractID);
+  //console.log("Available tract IDs in data:", [...new Set(data.map(d => d["Tract ID"]))].slice(0, 10));
   
   tractData = data
     .filter(d => d["Tract ID"] === tractID)
     .sort((a, b) => +a.Year - +b.Year);
   
-  console.log("Filtered tract data:", tractData.length, "records");
+  //console.log("Filtered tract data:", tractData.length, "records");
   
   // Update stream graph with new tract data
   updateStreamGraph(tractData);
@@ -95,9 +96,135 @@ function preprocessTractID(id){
     return id.replace(".", "");
 }
 
+function showTractInfoBox(d) {
+  // Remove any existing info box
+  d3.select("#tract-info-box").remove();
+
+  if (!d || !d.properties) return;
+
+  // Get tract ID in the same way as elsewhere
+  let tractId = d.properties.id;
+  if (typeof tractId === 'string' && tractId.length > 5) {
+    tractId = tractId.substr(5).trim();
+  } else if (d.properties.GEOID) {
+    tractId = d.properties.GEOID.toString().substr(5).trim();
+  } else if (d.properties.tractce || d.properties.TRACTCE) {
+    tractId = (d.properties.tractce || d.properties.TRACTCE).toString();
+  }
+
+  // Find the data for this tract and current year
+  const tractInfo = yearData.find(row => row["Tract ID"] === tractId);
+  // Find the gentrification score for this tract and year
+  const tractScoreObj = Scores.find(s => s.tractId === tractId && String(s.year) === String(year));
+  const tractScore = tractScoreObj ? tractScoreObj.score : undefined;
+
+  // If not found, show a message
+  if (!tractInfo) {
+    console.log("no info")
+    return;
+  }
+
+  // List the 6 attributes you want to show (update these keys as needed)
+  const attributeOrder = [
+    "Median_Household_Income",
+    "Median_Home_Value",
+    "Median_Gross_Rent",
+    "Vacant Units",
+    "25_Plus_Bachelors_Degree_Or_Higher_Count",
+    "Estimate!!Total"
+  ];
+  const attributeKeys = attributeOrder;
+  const attributeLabels = attributeOrder.map(col => {
+    if (col === "Median_Household_Income") return "Median Household Income";
+    if (col === "Median_Home_Value") return "Median Home Value";
+    if (col === "Median_Gross_Rent") return "Median Gross Rent";
+    if (col === "Vacant_Units") return "Vacant Units";
+    if (col === "25_Plus_Bachelors_Degree_Or_Higher_Count") return "Educational Attainment";
+    if (col === "Estimate!!Total") return "Population";
+    return col;
+  });
+
+  // Get centroid of the tract in SVG coordinates
+  const [cx, cy] = path.centroid(d);
+
+  // Create a group for the info box
+  const boxWidth = 300;
+  const boxHeight = 30 + (attributeKeys.length + 1) * 22; // +1 for score
+
+  // Add a group to the SVG for the info box
+  const infoGroup = svg.append("g")
+    .attr("id", "tract-info-box")
+    .attr("transform", `translate(${cx - boxWidth / 2},${cy - boxHeight / 2})`);
+
+  // Background rectangle
+  infoGroup.append("rect")
+    .attr("width", boxWidth)
+    .attr("height", boxHeight)
+    .attr("rx", 10)
+    .attr("ry", 10)
+    .attr("fill", "#fff")
+    .attr("stroke", "#333")
+    .attr("stroke-width", 1.5)
+    .attr("filter", "url(#tract-info-shadow)");
+
+  // Title
+  infoGroup.append("text")
+    .attr("x", boxWidth / 2)
+    .attr("y", 18)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "15px")
+    .attr("font-weight", "bold")
+    .text(`Tract ${tractId}`);
+
+  // Gentrification Score
+  infoGroup.append("text")
+    .attr("x", 16)
+    .attr("y", 40)
+    .attr("font-size", "13px")
+    .attr("fill", "#b22222")
+    .attr("font-weight", "bold")
+    .text(`Gentrification Score: ${typeof tractScore === "number" ? tractScore.toFixed(3) : "N/A"}`);
+
+  // Attribute values (shifted down by one row for score)
+  attributeKeys.forEach((key, i) => {
+    infoGroup.append("text")
+      .attr("x", 16)
+      .attr("y", 62 + i * 22)
+      .attr("font-size", "13px")
+      .attr("fill", "#222")
+      .text(`${attributeLabels[i]}: ${tractInfo[key] !== undefined ? tractInfo[key] : "N/A"}`);
+  });
+
+  // Close button
+  infoGroup.append("text")
+    .attr("x", boxWidth - 14)
+    .attr("y", 18)
+    .attr("font-size", "16px")
+    .attr("cursor", "pointer")
+    .attr("fill", "#888")
+    .text("✕")
+    .on("click", function() {
+      d3.select("#tract-info-box").remove();
+    });
+
+  // Optional: Add a drop shadow filter (once per SVG)
+  if (svg.select("defs#tract-info-shadow").empty()) {
+    const defs = svg.append("defs").attr("id", "tract-info-shadow");
+    const filter = defs.append("filter")
+      .attr("id", "tract-info-shadow-filter")
+      .attr("height", "130%");
+    filter.append("feDropShadow")
+      .attr("dx", 0)
+      .attr("dy", 2)
+      .attr("stdDeviation", 2)
+      .attr("flood-color", "#888")
+      .attr("flood-opacity", 0.3);
+  }
+  infoGroup.select("rect").attr("filter", "url(#tract-info-shadow-filter)");
+}
+
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
-  console.log("scores", scores)
   mapGroup.selectAll("path")
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
@@ -135,7 +262,7 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
 
   const legendSvg = d3.select("#heatmap-legend-container")
     .append("svg")
-    .attr("viewBox", `0 0 80 ${legendHeight + legendMargin.top * 2 + 60}`)
+    .attr("viewBox", `0 0 80 ${legendHeight + legendMargin.top * 2 + 30}`)
     .attr("width", "100%")
     .attr("height", "100%")
     .attr("preserveAspectRatio", "xMinYMin meet");
@@ -229,8 +356,8 @@ function getTractScores(){
     const currYear = years[i];
     const prevYearData = data.filter(d => +d.Year === prevYear);
     const currYearData = data.filter(d => +d.Year === currYear);
-
     //call genScore with the two variables and save to a variable called scores
+
     const scores = genScore(prevYearData, currYearData);
 
     // Add year property to each score object
@@ -244,7 +371,6 @@ function getTractScores(){
 
 function updateheatmap() {
   //stop calling every damn slider change
-  console.log("ALL scores",Scores);
   d3.select("#heatmap-legend-container").selectAll("*").remove(); // clear previous legend
   if (year != "2010") {
     // filter Scores for the current year
@@ -350,8 +476,8 @@ function init() {
     //Debug: //Debug: console.log(tracts);
 
     // Debug: Log the structure of the first tract feature
-    console.log("Sample tract feature:", tracts.features[0]);
-    console.log("Sample tract properties:", tracts.features[0]?.properties);
+    //console.log("Sample tract feature:", tracts.features[0]);
+    //console.log("Sample tract properties:", tracts.features[0]?.properties);
 
     // Draw counties
     mapGroup.selectAll("path").data(tracts.features).enter().append("path")
@@ -361,16 +487,7 @@ function init() {
         .attr("stroke-width", 0.5)
         .style("cursor", "pointer")
         .on('click', function(d) {
-            // In D3 v5, the data is the first parameter, not second
-            console.log("Clicked tract feature:", d);
-            console.log("Tract properties:", d ? d.properties : 'undefined');
-            
-            if (!d || !d.properties) {
-                console.error("No properties found on clicked tract");
-                return;
-            }
-            
-            // Try different ways to extract tract ID
+            if (!d || !d.properties) return;
             let id = d.properties.id;
             if (typeof id === 'string' && id.length > 5) {
                 id = id.substr(5).trim();
@@ -379,13 +496,11 @@ function init() {
             } else if (d.properties.tractce || d.properties.TRACTCE) {
                 id = (d.properties.tractce || d.properties.TRACTCE).toString();
             }
-            
-            console.log("Extracted tract ID:", id);
+            showTractInfoBox(d);
             updateTractTimeSeries(id);
         })
         .on('mouseover', function(d) {
             if (!d || !d.properties) return;
-            
             let id = d.properties.id;
             if (typeof id === 'string' && id.length > 5) {
                 id = id.substr(5).trim();
@@ -395,8 +510,9 @@ function init() {
                 id = (d.properties.tractce || d.properties.TRACTCE).toString();
             }
             
+            
             if (id !== selectedTractId) {
-                d3.select(this).style("opacity", 0.7);
+              d3.select(this).style("opacity", 0.7);
             }
         })
         .on('mouseout', function(d) {
@@ -423,7 +539,6 @@ function init() {
     // After heatmap is updated, NOW we update the barchart
     renderMedianTable("#med-table-container", yearData); 
   });
-  //console.log(yearData, tractData);
 }
 
 // Timeline Annotations
