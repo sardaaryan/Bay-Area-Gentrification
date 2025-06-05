@@ -11,8 +11,13 @@
     <!-- Left Section: Heatmap + Slider -->
     <div class="left">
       <h1 id="county_display">San Francisco Heatmap</h1>
-      <svg id="heatmap" width="100%" height="500"></svg>
-     
+      <div class="heatmap-container" style="position: relative">
+        <svg id="heatmap" width="100%" height="500"></svg>
+        <div class="legend-and-reset">
+          <div id="heatmap-legend-container"></div>
+          <button id="reset-zoom" style="margin-top:8px;">Reset View</button>
+        </div>
+      </div>
       <div class="slider-container">
         <label for="yearSlider">YEAR:</label>
         <input type="range" id="yearSlider" min="2010" max="2023" value="2010" step="1" />
@@ -30,18 +35,13 @@
 
       <section class="streamgraph" id="streamgraph-container">
         <h2>Stream Graph</h2>
-        <div id="streamgraph-container"></div>
         <div id="legend-container"></div>
-        <label for="tract-select">Select Census Tract:</label>
-        <select id="tract-select"></select>
       </section>
 
-      <!-- Comparative bar chart -->
-    <section class="barchart" id="barchart-container">
-      <h2>Comparative Bar Chart</h2>
-      <div id="barchart-container"></div>
-    </section>
-  </div>
+      <section class="barchart" id="med-table-container">
+        <h2>Median Table</h2>
+      </section>
+    </div>
 </div>
 
   <script src="https://d3js.org/d3.v5.min.js"></script>

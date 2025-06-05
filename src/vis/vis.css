@@ -1,8 +1,51 @@
-svg{
-    width: 100vw;
-    height: 98vh;
+/* Reset & Fullscreen Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body{
-    overflow: hidden !important;
+html, body {
+    height: 100%;
+    width: 100%;
+    font-family: 'Libre Baskerville', serif;
+    background: linear-gradient(145deg, #ffecd2 0%, #fcb69f 100%);
+    overflow: hidden;
+}
+
+/* SVG now fills full screen */
+#map {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+}
+
+/* Tooltip — modern + center float */
+#tooltip {
+    position: absolute;
+    background: #ffffffee;
+    color: #222;
+    border: 2px solid #ff7a59;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: 'Helvetica Neue', sans-serif;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: translateY(-12px);
+    z-index: 999;
+}
+
+/* County hover interaction */
+path {
+    transition: fill 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+path:hover {
+    fill: #ffe066;
+    transform: scale(1.03);
+    cursor: pointer;
 }
