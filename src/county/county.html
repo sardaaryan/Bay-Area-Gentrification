@@ -13,7 +13,10 @@
       <h1 id="county_display">San Francisco Heatmap</h1>
       <div class="heatmap-container" style="position: relative">
         <svg id="heatmap" width="100%" height="500"></svg>
-        <div id="legend-container" ></div>
+        <div class="legend-and-reset">
+          <div id="heatmap-legend-container"></div>
+          <button id="reset-zoom" style="margin-top:8px;">Reset View</button>
+        </div>
       </div>
       <div class="slider-container">
         <label for="yearSlider">YEAR:</label>

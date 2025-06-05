@@ -97,7 +97,7 @@ function preprocessTractID(id){
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
   console.log("scores", scores)
-  svg.selectAll("path")
+  mapGroup.selectAll("path")
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
       const tractId = d.properties.id.substr(5).trim();
@@ -123,7 +123,7 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
 
   if (colorScale === 0) {
     // Display a message in the legend container and return
-    d3.select("#legend-container")
+    d3.select("#heatmap-legend-container")
       .append("div")
       .style("padding", "10px")
       .text("NA :)");
@@ -133,7 +133,7 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
   const legendWidth = 20;
   const legendMargin = { top: 20, right: 30 };
   
-  const legendSvg = d3.select("#legend-container")
+  const legendSvg = d3.select("#heatmap-legend-container")
     .append("svg")
     .attr("width", 80)
     .attr("height", legendHeight + legendMargin.top * 2);
@@ -216,7 +216,7 @@ function getTractScores(){
 function updateheatmap() {
   //stop calling every damn slider change
   console.log("ALL scores",Scores);
-  d3.select("#legend-container").selectAll("*").remove(); // clear previous legend
+  d3.select("#heatmap-legend-container").selectAll("*").remove(); // clear previous legend
   if (year != "2010") {
     // filter Scores for the current year
     const scores = Scores.filter(s => String(s.year) === String(year));
@@ -268,6 +268,34 @@ document.getElementById("county_display").textContent = county + " County Heatma
 
 // Select SVG and define projection/path
 const svg = d3.select("#heatmap").attr("viewBox", `0 0 ${width} ${height}`);
+
+// --- Add this block for zoom functionality ---
+const mapGroup = svg.append("g").attr("class", "map-group");
+
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .on("zoom", function() {
+    // Get the current transform
+    let t = d3.event.transform;
+    // Clamp translation so the map stays within the SVG bounds
+    const panMargin = 400;
+    const maxX = panMargin;
+    const maxY = panMargin;
+    const minX = width - width * t.k - panMargin;
+    const minY = height - height * t.k - panMargin;
+    t.x = Math.max(Math.min(t.x, maxX), minX);
+    t.y = Math.max(Math.min(t.y, maxY), minY);
+    mapGroup.attr("transform", t);
+  });
+  
+
+svg.call(zoom);
+// --- End zoom block ---
+//zoom reset
+d3.select("#reset-zoom").on("click", function() {
+  svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+});
+
 const projection = d3.geoAlbers();
 const path = d3.geoPath().projection(projection);
 
@@ -297,7 +325,7 @@ function init() {
     console.log("Sample tract properties:", tracts.features[0]?.properties);
 
     // Draw counties
-    svg.selectAll("path").data(tracts.features).enter().append("path")
+    mapGroup.selectAll("path").data(tracts.features).enter().append("path")
         .attr("d", path)
         .attr("fill", "#69b3a2")
         .attr("stroke", "#fff")

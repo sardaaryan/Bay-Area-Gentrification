@@ -38,11 +38,24 @@ body {
   height: 100%;
   display: block;
 }
-
-#legend-container {
+#reset-zoom {
+  color: #fff;
+  background-color: #1976d2;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.legend-and-reset {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+#heatmap-legend-container {
   background-color: rgba(255, 255, 255, 0.85);
   padding: 8px 10px;
   border-radius: 3px;
