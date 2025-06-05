@@ -74,7 +74,7 @@ function initializeStreamGraph() {
 
 function updateStreamGraph(tractData) {
   const baselineY = y(0);
-  console.log("tractData sample:", tractData);
+  //console.log("tractData sample:", tractData[0]);
   if (!isInitialized) {
     initializeStreamGraph();
   }

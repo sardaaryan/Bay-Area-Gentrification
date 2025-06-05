@@ -3,7 +3,7 @@ export function genScore(prev, curr) {
   // List of attributes to use for scoring
   const ATTRS = [
     "Median_Household_Income",            
-    "Median Value",                       
+    "Median_Home_Value",                       
     "Median_Gross_Rent",                  
     "Vacant Units",                       
     "25_Plus_Bachelors_Degree_Or_Higher_Count"
@@ -42,6 +42,8 @@ export function genScore(prev, curr) {
 
     let M = 0; // Accumulator for score
     let validAttrs = 0; // Count of valid attributes used
+    let undefinedAttrs = []; // Track undefined/invalid attributes
+    let invalid = false; // Flag to mark if any attribute is invalid
 
     // For each attribute, calculate the log-ratio term
     for (let i = 0; i < ATTRS.length; i++) {
@@ -52,13 +54,34 @@ export function genScore(prev, curr) {
       const Xn_med = currMedians[i];           // Current median
       const xn_med = prevMedians[i];           // Previous median
 
-      // Skip if any value is invalid or non-positive
+      // If any value is invalid or non-positive, mark as invalid and record attribute
       if (
         isNaN(Xn) || isNaN(xn) || isNaN(Xn_med) || isNaN(xn_med) ||
         Xn <= 0 || xn <= 0 || Xn_med <= 0 || xn_med <= 0
       ) {
-        continue;
+        //console.log(Xn, xn, Xn_med, xn_med)
+        undefinedAttrs.push(attr);
+        invalid = true;
       }
+    }
+
+    if (invalid) {
+      results.push({
+        tractId,
+        score: undefined,
+        undefinedAttrs
+      });
+      //console.log(undefinedAttrs)
+      continue;
+    }
+
+    // If all attributes are valid, calculate the score
+    for (let i = 0; i < ATTRS.length; i++) {
+      const attr = ATTRS[i];
+      const Xn = parseFloat(tract[attr]);
+      const xn = parseFloat(prevTract[attr]);
+      const Xn_med = currMedians[i];
+      const xn_med = prevMedians[i];
 
       const Gn = Xn / xn;           // Growth ratio for tract
       const Gn_med = Xn_med / xn_med; // Growth ratio for median
@@ -72,12 +95,11 @@ export function genScore(prev, curr) {
       validAttrs++;
     }
 
-    // Store the average score for this tract (or undefined if no valid attributes)
     results.push({
       tractId,
-      score: validAttrs > 0 ? M / validAttrs : undefined
+      score: M / validAttrs,
+      undefinedAttrs: []
     });
   }
-
   return results;
 }
