@@ -58,7 +58,31 @@ The repository consists of the following components:
   </details>
 
 - `src/` contains all of the code of our implementation. We break down it's structure next.
-    - (NEED TO FINISH `src/`!!) <- this will be pretty long
+  <details>
+  <summary>structure of source code</summary>
+
+    1. `index.html` is the landing html page; the introductory article is called from here, and we set up a few dependencies.
+    2. `style.css` is general styling used throughout the repository; a few basic essential stylings.
+    3. `intro/` contains all the code for the article, which is what the user sees when they boot `src/`
+      - `intro.html` is the source code for the article
+      - `intro.css` includes stylings for the article; namely the images and the table
+      - `intro.js` is a simple event handler that loads the article from `index.html`
+    4. `vis/` contains all the code for the main Bay Area Map, which is the next part of the visualization (after clicking off the article)
+      - `vis.html` is where the map is loaded in. It also has event logic to move to counties.
+      - `vis.js` is the logic which handles this click functionality for the counties, as well as tooltipping.
+      - `vis.css` is styling for the Bay Area map
+    5. `county/` is the meat of our code; this is where all of the visualizations for a given county are housed.
+      - `county.html` contains all the svg containers for the heatmap, timeline slider, stream graph, bar chart, and annotations.
+      - `county.js` is the most complicated script in the whole project. It draws the heatmap, and has imported methods that handle the
+         dashboard visualizations & contents. Also reads in the CSV file. Most of the runtime is called in the `init()` function, and much 
+         of the event handling is routed through the timeline slider.
+      - `county.css` contains styling for the county view.
+      - `values.js` has some large constant attributes that are exported to JavaScript files in `county/`
+      - `dashboards/` has all the JavaScript files for the individual visualizations. `annotations.js` handles the timeline annotations, 
+        `heatMap.js` handles the heatmap functionality and calculates the values, `medianTable.js` generates the median table in the lower
+        right corner. `streamGraph.js` contains the method to generate the stream graph.
+
+  </details>
  
 The actual implementation lives in `src/`, and installation and setup will take place here.
 
