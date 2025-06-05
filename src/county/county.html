@@ -10,7 +10,16 @@
   <div class="container">
     <!-- Left Section: Heatmap + Slider -->
     <div class="left">
-      <h1 id="county_display">San Francisco Heatmap</h1>
+      <div class="header-row">
+        <h1 id="county_display">San Francisco Heatmap</h1>
+        <div class="zoom-help-inline">
+          <strong>How to Zoom:</strong>
+          Use your mouse wheel or trackpad to zoom in/out.<br>
+          Click and drag to pan the map.<br>
+          Click "Reset View" to return to the default view.
+        </div>
+      </div>
+      
       <a href="../vis/vis.html" id="back-button">Back to Bay Map</a>
       <div class="heatmap-container" style="position: relative">
         <svg id="heatmap" width="100%" height="500"></svg>
@@ -19,6 +28,7 @@
           <button id="reset-zoom" style="margin-top:8px;">Reset View</button>
         </div>
       </div>
+      
       <div class="slider-container">
         <label for="yearSlider">YEAR:</label>
         <input type="range" id="yearSlider" min="2010" max="2023" value="2010" step="1" />

@@ -27,6 +27,17 @@ body {
   height: auto;
   aspect-ratio: 3 / 2;
 }
+.zoom-help-between {
+  margin: 14px 0 8px 0;
+  padding: 10px 14px;
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #333;
+  max-width: 350px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
 
 #yearSlider {
   width: 100%;
@@ -279,4 +290,22 @@ section {
   text-align: center; /* center the text within the button */
   border-radius: 5px; /* optional: round the corners */
   cursor: pointer; /* make the cursor indicate it's clickable */
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.zoom-help-inline {
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  max-width: 320px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
