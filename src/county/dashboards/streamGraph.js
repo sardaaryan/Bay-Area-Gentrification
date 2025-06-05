@@ -171,7 +171,17 @@ function createLegend() {
     .style("border-radius", "2px");
 
   legendItems.append("span")
-    .text(function(d) { return labels[d]; })
+    .text(function(d) {
+      const units = {
+        home_value: " ($)",
+        income: " ($)",
+        rent: " ($)",
+        education: " (%)",
+        occupancy: " (Units)",
+        population: " (People)"
+      };
+  return labels[d] + (units[d] || "");
+})
     .style("font-family", "Helvetica, Arial, sans-serif")
     .style("font-size", "0.75rem")
     .style("color", "#333");

@@ -1,5 +1,14 @@
 // Given a current year and svg container from county.js, render the Median Table
 export function renderMedianTable(containerId, currentYearData) {
+  const unitsMap = {
+  "Total Population": "People",
+  "Median Home Value": "$",
+  "Median Household Income": "$",
+  "Vacant Units": "Units",
+  "Educational Attainment": "%",
+  "Gross Rent": "$"
+  };
+  
   const year = currentYearData[0].Year;
   const attributeMap = {
     "Total Population": "Estimate!!Total",
@@ -22,7 +31,7 @@ export function renderMedianTable(containerId, currentYearData) {
   // Header row
   thead.append("tr")
     .selectAll("th")
-    .data([`Attribute for ${year}`, "Median Value"])
+    .data([`Attribute for ${year}`, "Median Value per Tract"])
     .enter()
     .append("th")
     .text(d => d);
@@ -34,6 +43,13 @@ export function renderMedianTable(containerId, currentYearData) {
 
     const row = tbody.append("tr");
     row.append("td").text(label);
-    row.append("td").text(median !== undefined ? median.toLocaleString() : "N/A");
+    const unit = unitsMap[label];
+    let displayValue = "N/A";
+    if (median !== undefined) {
+      if (unit === "$") displayValue = `$${median.toLocaleString()}`;
+      else if (unit === "%") displayValue = `${median.toFixed(1)}%`;
+      else displayValue = `${median.toLocaleString()} ${unit}`;
+    }
+    row.append("td").text(displayValue);
   });
 }
