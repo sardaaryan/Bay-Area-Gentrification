@@ -135,6 +135,7 @@ section {
   box-sizing: border-box;
   overflow-y: auto;
   gap: 6px;
+  padding-bottom: 16px; /* Add this line for extra bottom space */
 }
 
 
@@ -211,7 +212,7 @@ section {
   height: -webkit-fill-available;
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.82rem; /* slightly smaller text */
   background-color: #ffffff;
   border-radius: 8px;
   overflow: hidden;
@@ -224,13 +225,13 @@ section {
   background-color: #f1f1f1;
   color: #333;
   text-align: left;
-  padding: 12px;
-  font-size: 1rem;
+  padding: 10px 12px;   /* less vertical and horizontal padding */
+  font-size: 0.92rem;
   border-bottom: 2px solid #ddd;
 }
 
 .median-table tbody td {
-  padding: 10px 12px;
+  padding: 6px 10px;   /* less vertical and horizontal padding */
   border-bottom: 1px solid #eee;
   color: #444;
 }
@@ -240,10 +241,10 @@ section {
 }
 
 .median-table tbody tr:hover {
-  background-color: #f0f8ff; /* soft blue background on hover */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* stronger elevation */
-  transform: translateY(-1px); /* subtle lift effect */
-  transition: all 0.2s ease;
+  background-color: #f0f8ff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
+  transform: translateY(-1px);
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 
@@ -308,4 +309,12 @@ section {
   color: #333;
   max-width: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.barchart, #med-table-container {
+  flex: 1;
+  min-height: 0;
+  max-height: 350px;    /* Adjust this value as needed for your layout */
+  overflow-y: auto;
+  padding-bottom: 8px;
 }
