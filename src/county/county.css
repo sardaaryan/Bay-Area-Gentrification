@@ -229,11 +229,11 @@ section {
 }
 
 .median-table tbody tr:hover {
-  background-color: black;
-
-  td{
-    color: white;
-  }
+  background-color: #f0f8ff; /* soft blue background on hover */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* stronger elevation */
+  transform: translateY(-1px); /* subtle lift effect */
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 768px) {
