@@ -14,3 +14,6 @@ counties_preprocess/
 # ignore all image directories
 **imgs/
 
+# temp zip files
+*.zip
+
