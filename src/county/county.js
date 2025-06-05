@@ -135,8 +135,19 @@ function drawHeatmapLegend(colorScale, minVal, maxVal) {
   
   const legendSvg = d3.select("#heatmap-legend-container")
     .append("svg")
-    .attr("width", 80)
-    .attr("height", legendHeight + legendMargin.top * 2);
+    .attr("viewBox", `0 0 80 ${legendHeight + legendMargin.top * 2}`)
+    .attr("width", "100%")
+    .attr("height", "100%")
+    .attr("preserveAspectRatio", "xMinYMin meet");
+
+  // Add legend title
+  legendSvg.append("text")
+    .attr("x", legendMargin.right + legendWidth / 2)
+    .attr("y", legendMargin.top - 10)
+    .attr("font-size", "8px")
+    .attr("font-weight", "bold")
+    .attr("text-anchor", "middle") // <-- Add this line to center the text
+    .text("Gentrification Score");
 
   const gradientId = "heatmap-gradient";
 
