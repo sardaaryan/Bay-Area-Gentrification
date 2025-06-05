@@ -225,7 +225,10 @@ function showTractInfoBox(d) {
 
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
+  //console.log("scores", scores)
   mapGroup.selectAll("path")
+    .transition()
+    .duration(500)
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
       const tractId = d.properties.id.substr(5).trim();
@@ -370,7 +373,7 @@ function getTractScores(){
 }
 
 function updateheatmap() {
-  //stop calling every damn slider change
+  //console.log("ALL scores",Scores);
   d3.select("#heatmap-legend-container").selectAll("*").remove(); // clear previous legend
   if (year != "2010") {
     // filter Scores for the current year
@@ -396,11 +399,11 @@ function updateheatmap() {
 // Load and merge all CSVs
 Promise.all(attributeFiles.map((d) => d3.csv(d.file))).then((datasets) => {
   const keys = attributeFiles.map((d) => d.column);
-
+  
   // Merge all datasets (all single-attribute)
   datasets.forEach((data, i) => {
     data.forEach((d) => {
-      if (d.County === county) {
+      if (d.County.trim() === county) {
         const key = `${d["Tract ID"]}_${d["Year"]}`;
         if (!filteredData.has(key)) {
           filteredData.set(key, {
@@ -412,9 +415,10 @@ Promise.all(attributeFiles.map((d) => d3.csv(d.file))).then((datasets) => {
       }
     });
   });
-
+  
   // Convert to global array
   data = Array.from(filteredData.values());
+  console.log(data);
   updateyearData();
   init();
 });

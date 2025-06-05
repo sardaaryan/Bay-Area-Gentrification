@@ -84,16 +84,22 @@ function updateStreamGraph(tractData) {
     return;
   }
 
-  // Transform tractData to the format expected by the stack generator
+  const maxValues = {};
+  keys.forEach(k => {
+    const rawKey = attributeMap[k];
+    maxValues[k] = d3.max(tractData, d => +d[rawKey] || 0);
+  });
+
+  // Transform tractData to the format expected by the stack generator and normalize the values
   const processedData = tractData.map(function(d) {
     return {
       Year: +d.Year,
-      home_value: +d[attributeMap.home_value] || 0,
-      income: +d[attributeMap.income] || 0,
-      rent: +d[attributeMap.rent] || 0,
-      education: +d[attributeMap.education] || 0,
-      occupancy: +d[attributeMap.occupancy] || 0,
-      population: +d[attributeMap.population] || 0
+      home_value: (+d[attributeMap.home_value] || 0) / maxValues.home_value,
+      income: (+d[attributeMap.income] || 0) / maxValues.income,
+      rent: (+d[attributeMap.rent] || 0) / maxValues.rent,
+      education: (+d[attributeMap.education] || 0) / maxValues.education,
+      occupancy: (+d[attributeMap.occupancy] || 0) / maxValues.occupancy,
+      population: (+d[attributeMap.population] || 0) / maxValues.population
     };
   });
 
