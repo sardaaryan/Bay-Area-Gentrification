@@ -23,6 +23,9 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
         # Read with only the S-code header (first row)
         df = pd.read_csv(file_name, header=0, low_memory=False)
 
+        # clean up stray Geographic Area Names
+        df = df[df['NAME'].notna() & ~df['NAME'].str.startswith('Geographic Area Name')]
+
         # Drop 'GEO_ID' if present (no longer needed for tract/county parsing)
         df = df.drop(columns=['GEO_ID'], errors='ignore')
 
@@ -39,7 +42,7 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
         # Pull the variable(s) depending on year
         if 2010 <= year <= 2017:
             if 'S1501_C01_015E' in df.columns:
-                edu_value = pd.to_numeric(df['S1501_C01_015E'], errors='coerce').fillna(0)
+                edu_value = pd.to_numeric(df['S1501_C01_015E'], errors='coerce')
             else:
                 print(f"Missing column S1501_C01_015E for {year}. Using 0.")
                 edu_value = pd.Series([0] * len(df))
@@ -70,6 +73,15 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
 
     final_df = pd.concat(all_years_data, ignore_index=True)
     final_df = final_df[['Tract ID', 'County', STANDARD_EDU_ATTAIN_NAME, 'Year']]
+
+    # Interpolate missing values linearly by tract and county
+    final_df.sort_values(by=['Tract ID', 'County', 'Year'], inplace=True)
+    final_df[STANDARD_EDU_ATTAIN_NAME] = (
+        final_df.groupby(['Tract ID', 'County'])[STANDARD_EDU_ATTAIN_NAME]
+        .transform(lambda group: group.interpolate(method='linear', limit_direction='both'))
+    )
+
+
     final_df.to_csv(output_filename, index=False)
     print(f"\nSuccessfully processed data into {output_filename}")
     print(f"Final shape: {final_df.shape}")
