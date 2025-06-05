@@ -4,6 +4,7 @@ import { renderBarChart } from './dashboards/barChart.js';
 import { initializeStreamGraph, updateStreamGraph } from './dashboards/streamGraph.js';
 import { countyids, attributeFiles, allAnnotations } from './values.js';
 
+//global variables
 const county = window.location.search.replace("%20", " ").substr(1);
 
 let year = yearSlider.value;
@@ -408,11 +409,8 @@ function init() {
   //console.log(yearData, tractData);
 }
 
-yearSlider.onchange = function(){year = yearSlider.value; updateyearData();}; //Debug: console.log(year, yearData);};
-
 // Timeline Annotations
 
-//const yearSlider = document.getElementById("yearSlider");
 const selectedYear = document.getElementById("selected-year"); // changes year for slider
 
 selectedYear.textContent = year;
@@ -421,6 +419,7 @@ yearSlider.addEventListener("input", () => {
   selectedYear.textContent = yearSlider.value;
 });
 
+//slider update dectection to call functions to reload all visuals and annotations
 yearSlider.onchange = function(){
   year = yearSlider.value; 
   updateyearData(); 
