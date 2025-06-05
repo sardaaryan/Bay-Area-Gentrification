@@ -99,6 +99,8 @@ function preprocessTractID(id){
 function updateregions(colorScale, scores) {
   //console.log("scores", scores)
   mapGroup.selectAll("path")
+    .transition()
+    .duration(500)
     .attr("fill", function(d) {
       if (!d || !d.properties) return "#fff";
       const tractId = d.properties.id.substr(5).trim();
