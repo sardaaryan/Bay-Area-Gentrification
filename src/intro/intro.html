@@ -70,7 +70,7 @@
 
   <p>
     Measuring gentrification is complicated. <a href="https://www.huduser.gov/portal/periodicals/cityscape/vol26num1/ch20.pdf">This article</a>
-    operationalizes how to measures gentrification into 5 attributes, which have been acquired from the 2010-2023 American Community Survey (ACS).
+    operationalizes how to measure gentrification into 5 attributes, which have been acquired from the 2010-2023 American Community Survey (ACS).
     We have modified the formula and it's use-case, which will be touched on momentarily. The 5 attributes, and how to calculate gentrification 
     with them, is tabulated below:
   </p>
@@ -198,9 +198,9 @@
     <li>
       \( M \leq 0 \) maps to a white color, indicating no gentrification at all. \( M > 0 \) will 
       be a color-spectrum from white to red, with the color red being the highest value recorded for 
-      \(M\); this is the most gentrifying census tract in the county for the given year. A gray census 
-      tract indicates the data is incomplete, which is determined if one or more of the 5 gentrification 
-      attributes are undefined (or 0).
+      \(M\); this is the most gentrifying census tract across all years, since the values are measured
+      across the timeline. A gray census tract indicates the data is incomplete, which is determined 
+      if one or more of the 5 gentrification attributes are undefined (or 0).
     </li>
   </ol>
 
@@ -209,7 +209,7 @@
     You are encouraged to start at this year for a county, and see how it changes over time into the year 2023.
     By quantifying gentrification with the heatmap, the hope is to indicate socioeconomic disparity 
     at a higher granularity. Note this gentrification measurement is absolute, for 2010-2023: all of the \(M\)
-    scores for each year are measured at the onset of the visualization, and then the colorscale is applied, for
+    scores for each year are measured at the onset of the visualization, and then the colorscale is applied for
     a given county. This enables the user to see where the change in gentrification is at it's worst, and answer a
     salient question: is gentrification getting worse year-after-year?
   </p>

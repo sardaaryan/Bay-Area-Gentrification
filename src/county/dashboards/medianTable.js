@@ -31,7 +31,7 @@ export function renderMedianTable(containerId, currentYearData) {
   // Header row
   thead.append("tr")
     .selectAll("th")
-    .data([`Attribute for ${year}`, "Median Value per Tract"])
+    .data([`Attribute for ${year}`, "County Median"])
     .enter()
     .append("th")
     .text(d => d);

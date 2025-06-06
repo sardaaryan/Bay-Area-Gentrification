@@ -43,6 +43,10 @@ function updateTractTimeSeries(tractID) {
   
   // Highlight selected tract
   highlightSelectedTract(tractID);
+
+  // Update the stream graph title
+  updateStreamGraphTitle(tractID);
+
 }
 
 function highlightSelectedTract(tractID) {
@@ -385,12 +389,33 @@ const path = d3.geoPath().projection(projection);
 //get county tract topo json file
 const tractfile = "../data/tracts/" + countyids[county] + ".topo.json";
 
+// Get the h2 element for the annotation title
+const annotationTitle = document.getElementById("annotation-title");
+const streamGraphTitle = document.getElementById("streamgraph-title");
+
+// updates the annotation title based on current year selected
+function updateAnnotationTitle(currentYear) {
+    annotationTitle.textContent = "Silicon Valley in " + currentYear;
+}
+
+// update the stream graph title when a tract is selected. Otherwise defaults
+function updateStreamGraphTitle(tractID) {
+    if (tractID) {
+        streamGraphTitle.textContent = `Tract ${tractID}'s Attribute Timeline`;
+    } else {
+        streamGraphTitle.textContent = "Select A Tract To See It's Attribute Timeline";
+    }
+}
+
 //CALL ALL VISUALIZATION FUNCTIONS HERE
 function init() {
   updateAnnotationsForYear(allAnnotations[year] || []); 
   
   // Initialize stream graph
   initializeStreamGraph();
+
+  // Initialize stream graph title
+  updateStreamGraphTitle(selectedTractId);
   
   //draw regions
   d3.json(tractfile).then((topoData) => {
@@ -467,6 +492,8 @@ function init() {
     updateheatmap();
     // After heatmap is updated, NOW we update the barchart
     renderMedianTable("#med-table-container", yearData); 
+    // initial update of annotation title
+    updateAnnotationTitle(year);
   });
 }
 
@@ -480,12 +507,13 @@ yearSlider.addEventListener("input", () => {
   selectedYear.textContent = yearSlider.value;
 });
 
-//slider update dectection to call functions to reload all visuals and annotations
+//slider update detection to call functions to reload all visuals and annotations
 yearSlider.onchange = function(){
   year = yearSlider.value; 
   updateyearData(); 
   updateAnnotationsForYear(allAnnotations[year] || []);
   updateheatmap();
   renderMedianTable("#med-table-container", yearData);
+  updateAnnotationTitle(year);
   d3.select("#tract-info-fixed-container").html("");
 };
