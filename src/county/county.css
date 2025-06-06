@@ -1,7 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background-color: #e0e0e0;
+  background: linear-gradient(145deg, #e6f4fa 0%, #007acc 100%);
 }
 
 .container {
@@ -20,6 +20,7 @@ body {
   padding: 16px;
   box-sizing: border-box;
   overflow-y: auto;
+  background: #fafdffcc;
 }
 
 #heatmap {
@@ -30,11 +31,11 @@ body {
 .zoom-help-between {
   margin: 14px 0 8px 0;
   padding: 10px 14px;
-  background: #f8f8f8;
-  border: 1px solid #ddd;
+  background: #e6f4fa;
+  border: 1px solid #007acc55;
   border-radius: 6px;
   font-size: 14px;
-  color: #333;
+  color: #00334d;
   max-width: 350px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
@@ -58,12 +59,17 @@ body {
 }
 #reset-zoom {
   color: #fff;
-  background-color: #003166;
+  background-color: #007acc;
   border: none;
   padding: 6px 16px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background 0.2s;
 }
+#reset-zoom:hover {
+  background-color: #005a99;
+}
+
 .legend-and-reset {
   position: absolute;
   top: 0;
@@ -77,12 +83,13 @@ body {
   width: 100%;
   max-width: 120px; 
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: #fafdffcc;
+  border: 1.5px solid #007acc55;
+  color: #00334d;
   padding: 8px 10px;
   border-radius: 3px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
   font-size: 16px;
-  color: #333;
   z-index: 2;
 }
 
@@ -93,12 +100,12 @@ body {
   display: flex;
   align-items: center;
   padding: 10px 10px;
-  background: #b9e4cd; 
-  border: 1px solid #b0d0b9; 
+  background: #b3e0fa;
+  border: 1px solid #007acc55;
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   font-family: Arial, sans-serif;
-  color: #333;
+  color: #00334d;
 }
 
 .slider-labels {
@@ -136,6 +143,8 @@ section {
   overflow-y: auto;
   gap: 6px;
   padding-bottom: 16px; /* Add this line for extra bottom space */
+  background: #fff;    /* <-- White background for right side */
+  padding-left: 12px;
 }
 
 
@@ -163,16 +172,17 @@ section {
   position: relative;
   margin: 10px 0;
   padding: 10px 12px 10px 28px;
-  background-color: #f9f9f9;
-  border-left: 4px solid #003166;
+  background-color: #fafdffcc;
+  border-left: 4px solid #007acc;
   border-radius: 8px;
   font-size: 14px;
   line-height: 1.4;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  color: #00334d;
 }
 
 .annotations li:hover {
-  background-color: #f0f8ff; /* soft blue background on hover */
+  background-color: #e6f4fa; /* soft blue background on hover */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* stronger elevation */
   transform: translateY(-1px); /* subtle lift effect */
   transition: all 0.2s ease;
@@ -185,7 +195,7 @@ section {
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #003166;
+  color: #007acc;
   font-size: 20px;
   line-height: 1;
 }
@@ -213,27 +223,27 @@ section {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.82rem; /* slightly smaller text */
-  background-color: #ffffff;
+  background-color: #fafdffcc;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px #007acc22;
   table-layout: fixed;
   word-wrap: break-word;
 }
 
 .median-table thead th {
-  background-color: #f1f1f1;
-  color: #333;
+  background-color: #b3e0fa;
+  color: #00334d;
   text-align: left;
   padding: 10px 12px;   /* less vertical and horizontal padding */
   font-size: 0.92rem;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #007acc33;
 }
 
 .median-table tbody td {
   padding: 6px 10px;   /* less vertical and horizontal padding */
-  border-bottom: 1px solid #eee;
-  color: #444;
+  border-bottom: 1px solid #007acc22;
+  color: #00334d;
 }
 
 .median-table tbody tr:last-child td {
@@ -241,7 +251,7 @@ section {
 }
 
 .median-table tbody tr:hover {
-  background-color: #f0f8ff;
+  background-color: #e6f4fa;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.10);
   transform: translateY(-1px);
   transition: all 0.15s ease;
@@ -282,15 +292,20 @@ section {
 
 #back-button{
   text-decoration: none; /* removes the underline */
-  color: white;
+  color: #fff;
   
   /* Add button-like appearance */
   display: inline-block; /* allows setting padding and margin */
   padding: 14px 25px; /* adjust as needed for size and spacing */
-  background-color: #003166; /* set desired background color */
+  background-color: #007acc; /* set desired background color */
   text-align: center; /* center the text within the button */
   border-radius: 5px; /* optional: round the corners */
   cursor: pointer; /* make the cursor indicate it's clickable */
+  transition: background 0.2s;
+  box-shadow: 0 2px 8px #007acc22;
+}
+#back-button:hover {
+  background-color: #005a99;
 }
 
 .header-row {
@@ -301,12 +316,12 @@ section {
 }
 
 .zoom-help-inline {
-  background: #f8f8f8;
-  border: 1px solid #ddd;
+  background: #ffffff;
+  border: 1px solid #007acc55;
   border-radius: 6px;
   padding: 10px 14px;
   font-size: 14px;
-  color: #333;
+  color: #00334d;
   max-width: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }

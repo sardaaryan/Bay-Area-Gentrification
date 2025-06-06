@@ -19,10 +19,16 @@
     <strong>California Bay Area Counties Map</strong><br>
     Hover over a county to highlight it and see its name.<br>
     Click a county to view more details.
+    <button id="back-to-intro" style="margin-top: 2em;">Back to Intro</button>
   </div>
   <!-- D3 Visualization Element -->
   <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
   <div id="tooltip" style="opacity: 0;"></div>
   <script src="vis.js"></script>
+  <script>
+    document.getElementById("back-to-intro").onclick = function() {
+      window.location.href = "../index.html";
+    };
+  </script>
 </body>
 </html>
