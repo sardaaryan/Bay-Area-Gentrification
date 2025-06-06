@@ -19,14 +19,14 @@
           Click "Reset View" to return to the default view.
         </div>
       </div>
-      
-      <div class="heatmap-container" style="position: relative">
-        <svg id="heatmap" width="100%" height="500"></svg>
+      <a href="../vis/vis.html" id="back-button">Back to Bay Map</a>
+      <div class="heatmap-container" style="position:relative;">
+        <svg id="heatmap"></svg>
         <div class="legend-and-reset">
           <div id="heatmap-legend-container"></div>
-          <button id="reset-zoom" style="margin-top:8px;">Reset View</button>
-          <a href="../vis/vis.html" id="back-button" style="margin-top: 0.8em;">Back to Bay Map</a>
+          <button id="reset-zoom">Reset Zoom</button>
         </div>
+        <div id="tract-info-fixed-container"></div>
       </div>
       
       <div class="slider-container">
@@ -35,7 +35,6 @@
         <span id="selected-year">2010</span>
         
       </div>
-      <div id="tract-info-fixed-container"></div>
     </div>
 
     <!-- Right Section: Annotation + Stream Graph + Bar Chart -->

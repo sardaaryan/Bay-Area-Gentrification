@@ -336,14 +336,19 @@ section {
 }
 
 #tract-info-fixed-container {
-  width: 100%;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: auto;
+  max-width: 360px;
   display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  z-index: 10;
+  justify-content: flex-end;
+  z-index: 20;
+  pointer-events: none; /* allow map interaction under the box */
 }
 
 .fixed-info-box {
+  pointer-events: auto; /* allow interaction with the box itself */
   background: white;
   border: 1.5px solid #333;
   border-radius: 10px;
