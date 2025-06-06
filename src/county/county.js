@@ -152,7 +152,29 @@ function showTractInfoBox(d) {
     .text(`Gentrification Score: ${typeof tractScore === "number" ? tractScore.toFixed(3) : "N/A"}`);
 
   attributes.forEach(({ key, label }) => {
-    box.append("div").text(`${label}: ${tractInfo[key] !== undefined ? tractInfo[key] : "N/A"}`);
+    let value = tractInfo[key];
+    // Format numbers with no decimal places if value is a number and not NaN
+    if (value !== undefined && value !== null && !isNaN(value) && value !== "") {
+      value = Number(value);
+      if (!isNaN(value)) {
+        value = value.toLocaleString(undefined, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+        // Add $ for median attributes and gross rent
+        if (
+          key === "Median_Household_Income" ||
+          key === "Median_Home_Value" ||
+          key === "Median_Gross_Rent"
+        ) {
+          value = "$" + value;
+        }
+        // Add % for Educational Attainment
+        if (key === "25_Plus_Bachelors_Degree_Or_Higher_Count") {
+          value = value + "%";
+        }
+      }
+    } else {
+      value = "N/A";
+    }
+    box.append("div").text(`${label}: ${value}`);
   });
 }
 
