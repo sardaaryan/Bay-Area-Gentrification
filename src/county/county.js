@@ -101,12 +101,12 @@ function preprocessTractID(id){
 }
 
 function showTractInfoBox(d) {
-  // Remove any existing info box
-  d3.select("#tract-info-box").remove();
+  // Remove existing box
+  d3.select("#tract-info-fixed-container").html("");
 
   if (!d || !d.properties) return;
 
-  // Get tract ID in the same way as elsewhere
+  // Get tract ID
   let tractId = d.properties.id;
   if (typeof tractId === 'string' && tractId.length > 5) {
     tractId = tractId.substr(5).trim();
@@ -116,116 +116,40 @@ function showTractInfoBox(d) {
     tractId = (d.properties.tractce || d.properties.TRACTCE).toString();
   }
 
-  // Find the data for this tract and current year
   const tractInfo = yearData.find(row => row["Tract ID"] === tractId);
-  // Find the gentrification score for this tract and year
   const tractScoreObj = Scores.find(s => s.tractId === tractId && String(s.year) === String(year));
   const tractScore = tractScoreObj ? tractScoreObj.score : undefined;
 
-  // If not found, show a message
-  if (!tractInfo) {
-    console.log("no info")
-    return;
-  }
+  if (!tractInfo) return;
 
-  // List the 6 attributes you want to show 
-  const attributeOrder = [
-    "Median_Household_Income",
-    "Median_Home_Value",
-    "Median_Gross_Rent",
-    "Vacant Units",
-    "25_Plus_Bachelors_Degree_Or_Higher_Count",
-    "Estimate!!Total"
+  const attributes = [
+    { key: "Median_Household_Income", label: "Median Household Income" },
+    { key: "Median_Home_Value", label: "Median Home Value" },
+    { key: "Median_Gross_Rent", label: "Median Gross Rent" },
+    { key: "Vacant Units", label: "Vacant Units" },
+    { key: "25_Plus_Bachelors_Degree_Or_Higher_Count", label: "Educational Attainment" },
+    { key: "Estimate!!Total", label: "Population" },
   ];
-  const attributeKeys = attributeOrder;
-  const attributeLabels = attributeOrder.map(col => {
-    if (col === "Median_Household_Income") return "Median Household Income";
-    if (col === "Median_Home_Value") return "Median Home Value";
-    if (col === "Median_Gross_Rent") return "Median Gross Rent";
-    if (col === "Vacant_Units") return "Vacant Units";
-    if (col === "25_Plus_Bachelors_Degree_Or_Higher_Count") return "Educational Attainment";
-    if (col === "Estimate!!Total") return "Population";
-    return col;
+
+  const container = d3.select("#tract-info-fixed-container");
+
+  const box = container.append("div").attr("class", "fixed-info-box");
+
+  box.append("div").attr("class", "close-btn").text("✕").on("click", () => {
+    box.remove();
   });
 
-  // Get centroid of the tract in SVG coordinates
-  const [cx, cy] = path.centroid(d);
+  box.append("h3").text(`Tract ${tractId}`);
 
-  // Create a group for the info box
-  const boxWidth = 300;
-  const boxHeight = 30 + (attributeKeys.length + 1) * 22; // +1 for score
-
-  // Add a group to the SVG for the info box
-  const infoGroup = svg.append("g")
-    .attr("id", "tract-info-box")
-    .attr("transform", `translate(${cx - boxWidth / 2},${cy - boxHeight / 2})`);
-
-  // Background rectangle
-  infoGroup.append("rect")
-    .attr("width", boxWidth)
-    .attr("height", boxHeight)
-    .attr("rx", 10)
-    .attr("ry", 10)
-    .attr("fill", "#fff")
-    .attr("stroke", "#333")
-    .attr("stroke-width", 1.5)
-    .attr("filter", "url(#tract-info-shadow)");
-
-  // Title
-  infoGroup.append("text")
-    .attr("x", boxWidth / 2)
-    .attr("y", 18)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "15px")
-    .attr("font-weight", "bold")
-    .text(`Tract ${tractId}`);
-
-  // Gentrification Score
-  infoGroup.append("text")
-    .attr("x", 16)
-    .attr("y", 40)
-    .attr("font-size", "13px")
-    .attr("fill", "#b22222")
-    .attr("font-weight", "bold")
+  box.append("div")
+    .attr("class", "score")
     .text(`Gentrification Score: ${typeof tractScore === "number" ? tractScore.toFixed(3) : "N/A"}`);
 
-  // Attribute values (shifted down by one row for score)
-  attributeKeys.forEach((key, i) => {
-    infoGroup.append("text")
-      .attr("x", 16)
-      .attr("y", 62 + i * 22)
-      .attr("font-size", "13px")
-      .attr("fill", "#222")
-      .text(`${attributeLabels[i]}: ${tractInfo[key] !== undefined ? tractInfo[key] : "N/A"}`);
+  attributes.forEach(({ key, label }) => {
+    box.append("div").text(`${label}: ${tractInfo[key] !== undefined ? tractInfo[key] : "N/A"}`);
   });
-
-  // Close button
-  infoGroup.append("text")
-    .attr("x", boxWidth - 14)
-    .attr("y", 18)
-    .attr("font-size", "16px")
-    .attr("cursor", "pointer")
-    .attr("fill", "#888")
-    .text("✕")
-    .on("click", function() {
-      d3.select("#tract-info-box").remove();
-    });
-
-  // Optional: Add a drop shadow filter (once per SVG)
-  if (svg.select("defs#tract-info-shadow").empty()) {
-    const defs = svg.append("defs").attr("id", "tract-info-shadow");
-    const filter = defs.append("filter")
-      .attr("id", "tract-info-shadow-filter")
-      .attr("height", "130%");
-    filter.append("feDropShadow")
-      .attr("dx", 0)
-      .attr("dy", 2)
-      .attr("stdDeviation", 2)
-      .attr("flood-color", "#888")
-      .attr("flood-opacity", 0.3);
-  }
-  infoGroup.select("rect").attr("filter", "url(#tract-info-shadow-filter)");
 }
+
 
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
@@ -525,6 +449,7 @@ function init() {
             } else if (d.properties.tractce || d.properties.TRACTCE) {
                 id = (d.properties.tractce || d.properties.TRACTCE).toString();
             }
+            console.log(d)
             showTractInfoBox(d);
             updateTractTimeSeries(id);
         })
@@ -589,6 +514,6 @@ yearSlider.onchange = function(){
   updateAnnotationsForYear(allAnnotations[year] || []);
   updateheatmap();
   renderMedianTable("#med-table-container", yearData);
-  // update annotation title when user moves slider
   updateAnnotationTitle(year);
+  d3.select("#tract-info-fixed-container").html("");
 };

@@ -293,13 +293,14 @@ section {
 #back-button{
   text-decoration: none; /* removes the underline */
   color: #fff;
+  border: none;
   
   /* Add button-like appearance */
   display: inline-block; /* allows setting padding and margin */
-  padding: 14px 25px; /* adjust as needed for size and spacing */
+  padding: 6px 16px; /* adjust as needed for size and spacing */
   background-color: #007acc; /* set desired background color */
   text-align: center; /* center the text within the button */
-  border-radius: 5px; /* optional: round the corners */
+  border-radius: 4px; /* optional: round the corners */
   cursor: pointer; /* make the cursor indicate it's clickable */
   transition: background 0.2s;
   box-shadow: 0 2px 8px #007acc22;
@@ -332,4 +333,42 @@ section {
   max-height: 350px;    /* Adjust this value as needed for your layout */
   overflow-y: auto;
   padding-bottom: 8px;
+}
+
+#tract-info-fixed-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  z-index: 10;
+}
+
+.fixed-info-box {
+  background: white;
+  border: 1.5px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  padding: 12px 18px;
+  font-family: Arial, sans-serif;
+  max-width: 360px;
+  font-size: 13px;
+  color: #222;
+  position: relative;
+}
+.fixed-info-box h3 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+}
+.fixed-info-box .close-btn {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #888;
+}
+.fixed-info-box .score {
+  font-weight: bold;
+  color: #b22222;
+  margin-bottom: 6px;
 }
