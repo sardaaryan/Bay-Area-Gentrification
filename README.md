@@ -102,4 +102,9 @@ The `data.zip` file contains the 6 preprocessed CSV files which the visualizatio
 1. Run any local development server of your choice. We have enjoyed using `live-server` on the command line, but conceivably any similar service should work. If not, we recommend `live-server`. Make sure you have run it in the `src/` directory.
 2. The visualization has begun! Enjoy 🙂
 
+## Acknowledgements
+
+We have used LLM models extensively to aid us in bring our visualization to life. Much of the code was refactored, pruned, and modified as the need arose. ChatGPT, Claude 4.0,
+and Gemini were the 3 that we consistently used. All visualization methods, mediums, ideas, and reports remain strictly the product of Team 17, and we did not use LLM's for these components.
+
 This project has been a collaborative effort by Jacob Feenstra ([`jdfeenstra@ucdavis.edu`](jdfeenstra@ucdavis.edu)), Aryan Sarda ([`arsarda@ucdavis.edu`](arsarda@ucdavis.edu)), Diane Kim ([`dnekim@ucdavis.edu`](dnekim@ucdavis.edu)), and Benicio Bailey ([`bkbailey@ucdavis.edu`](bkbailey@ucdavis.edu))
