@@ -145,7 +145,7 @@ function showTractInfoBox(d) {
     box.remove();
   });
 
-  box.append("h3").text(`Tract ${tractId} (${year})`);
+  box.append("h3").text(`Tract ${tractId} in ${year}`);
 
   box.append("div")
     .attr("class", "score")
