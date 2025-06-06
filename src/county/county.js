@@ -73,7 +73,7 @@ function highlightSelectedTract(tractID) {
       })
       .attr("stroke", "#000")
       .attr("stroke-width", 2.5)
-      .style("opacity", 1);
+      .style("opacity", 1)
     
     // Dim other tracts slightly
     svg.selectAll("path")
@@ -86,7 +86,7 @@ function highlightSelectedTract(tractID) {
             id = d.properties.GEOID.toString().substr(5).trim();
         } else if (d.properties.tractce || d.properties.TRACTCE) {
             id = (d.properties.tractce || d.properties.TRACTCE).toString();
-        }
+        }selectedTractId
         return id !== tractID;
       })
       .style("opacity", 0.8);
@@ -100,7 +100,13 @@ function preprocessTractID(id){
     return id.replace(".", "");
 }
 
+
+let lastSelectedTractFeature = null; // Add this global variable
+
 function showTractInfoBox(d) {
+  // Save the last selected tract feature for future updates
+  lastSelectedTractFeature = d; // <-- Fix: store the feature here
+
   // Remove existing box
   d3.select("#tract-info-fixed-container").html("");
 
@@ -139,7 +145,7 @@ function showTractInfoBox(d) {
     box.remove();
   });
 
-  box.append("h3").text(`Tract ${tractId}`);
+  box.append("h3").text(`Tract ${tractId} (${year})`);
 
   box.append("div")
     .attr("class", "score")
@@ -153,8 +159,8 @@ function showTractInfoBox(d) {
 
 //Helpers for heatmap
 function updateregions(colorScale, scores) {
-  //console.log("scores", scores)
-  mapGroup.selectAll("path")
+  // Start the transition
+  const transition = mapGroup.selectAll("path")
     .transition()
     .duration(500)
     .attr("fill", function(d) {
@@ -171,10 +177,14 @@ function updateregions(colorScale, scores) {
     })
     .attr("stroke", "#222") 
     .attr("stroke-width", 0.5);
-  
-  // Maintain selected tract highlighting after color update
+
+  // Only call highlightSelectedTract after ALL transitions finish
   if (selectedTractId) {
-    highlightSelectedTract(selectedTractId);
+    let n = 0;
+    transition.on("start", () => ++n)
+    transition.on("end", function() {
+        if (!--n) highlightSelectedTract(selectedTractId);
+      });
   }
 }
 // Add vertical color legend
@@ -320,6 +330,7 @@ function updateheatmap() {
   } else {
     updateregions(d3.scaleSequential().domain([0, 0]).interpolator(d3.interpolateReds),[]);
     drawHeatmapLegend(0, 0, 0);
+    
   }
 }
 
@@ -515,5 +526,9 @@ yearSlider.onchange = function(){
   updateheatmap();
   renderMedianTable("#med-table-container", yearData);
   updateAnnotationTitle(year);
-  d3.select("#tract-info-fixed-container").html("");
+
+  // Instead of removing the box, update it if a tract is selected
+  if (lastSelectedTractFeature) {
+    showTractInfoBox(lastSelectedTractFeature); // <-- Fix: use the stored feature
+  }
 };
