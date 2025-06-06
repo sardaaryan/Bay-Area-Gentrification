@@ -95,7 +95,7 @@ We walk through installation steps here to prepare for execution.
 3. Lastly, to get the images in the introductory article of our visualization, use [this Dropbox link](https://www.dropbox.com/scl/fi/oxvyd2i33sdjcjdkzhb5v/imgs.zip?rlkey=t4qnf6sf5zd832cjiqj647dub&st=3g5rytn2&dl=1) to download imgs.zip immediately. Make sure it is unzipped in `src/intro/`. Do not change it's name or contents.
 3. The project is ready to be executed!
 
-The zipfile contains the 6 preprocessed CSV files which the visualization uses, a `tracts/` folder containing 9 topo.json files (each one corresponds to 1 of the 9 Bay Area counties, illustrating their census tracts), and a `filtered-counties.topo.json`, which is the overview of the 9 counties of the San Francisco Bay Area (without census tracts). 
+The `data.zip` file contains the 6 preprocessed CSV files which the visualization uses, a `tracts/` folder containing 9 topo.json files (each one corresponds to 1 of the 9 Bay Area counties, illustrating their census tracts), and a `filtered-counties.topo.json`, which is the overview of the 9 counties of the San Francisco Bay Area (without census tracts).  `imgs.zip` includes the 4 image used in the introductory report.
 
 ## Execution
 
