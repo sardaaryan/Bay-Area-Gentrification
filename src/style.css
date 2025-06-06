@@ -1,7 +1,7 @@
+/* General body styles */
 body {
   font-family: 'Libre Baskerville', serif;
   line-height: 1.75;
-  max-width: none;
   margin: 0;
   padding: 0;
   color: #333;
@@ -9,6 +9,7 @@ body {
   min-height: 100vh;
 }
 
+/* Main content container */
 main {
   max-width: 900px;
   margin: 3em auto;
@@ -18,14 +19,15 @@ main {
   box-shadow: 0 4px 32px #007acc33;
 }
 
+/* Headings */
 h2 {
   border-left: 6px solid #007acc;
   padding-left: 12px;
   margin-top: 2em;
   color: #007acc;
-  background: none;
 }
 
+/* Links */
 a {
   color: #007acc;
   text-decoration: none;
@@ -35,11 +37,13 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Continue button container */
 .continue-container {
   text-align: center;
   margin: 2rem 0;
 }
 
+/* Continue button styles */
 .continue-button {
   background-color: #007acc;
   color: white;
@@ -54,12 +58,14 @@ a:hover {
   background-color: #005f99;
 }
 
+/* SVG styles */
 svg {
   display: block;
   width: 100vw;
   height: 98vh;
 }
 
+/* Tooltip styles */
 .tooltip {
   position: absolute;
   padding: 6px 10px;
@@ -72,6 +78,7 @@ svg {
   transition: opacity 0.2s;
 }
 
+/* Image styles */
 .img-large {
   display: block;
   margin: 2.5rem auto 1.5rem auto;

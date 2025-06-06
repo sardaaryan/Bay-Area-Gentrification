@@ -34,6 +34,7 @@ def clean_and_process_educational_attainment_data(start_year=2010, end_year=2023
             print(f"Missing expected 'NAME' column in {file_name}. Skipping.")
             continue
 
+        # Use regex splits to assign individual csv variables
         split_data = df['NAME'].str.split(r'[,;]', expand=True)
         df['Tract ID'] = split_data[0].str.replace('Census Tract ', '', regex=False)
         df['County'] = split_data[1].str.replace(' County', '', regex=False).fillna('')

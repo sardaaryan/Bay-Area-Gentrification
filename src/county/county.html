@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gentrification Dashboard</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="county.css" />
+
+  <!-- Scripts -->
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
+  <script type="module" src="county.js"></script>
 </head>
+
 <body>
   <div class="container">
     <!-- Left Section: Heatmap + Slider -->
     <div class="left">
+      <!-- Header Row -->
       <div class="header-row">
         <h1 id="county_display">San Francisco Heatmap</h1>
         <div class="zoom-help-inline">
@@ -19,7 +29,11 @@
           Click "Reset View" to return to the default view.
         </div>
       </div>
+
+      <!-- Back Button -->
       <a href="../vis/vis.html" id="back-button">Back to Bay Map</a>
+
+      <!-- Heatmap Container -->
       <div class="heatmap-container" style="position:relative;">
         <svg id="heatmap"></svg>
         <div class="legend-and-reset">
@@ -28,36 +42,35 @@
         </div>
         <div id="tract-info-fixed-container"></div>
       </div>
-      
+
+      <!-- Slider Container -->
       <div class="slider-container">
         <label for="yearSlider">YEAR:</label>
         <input type="range" id="yearSlider" min="2010" max="2023" value="2010" step="1" />
         <span id="selected-year">2010</span>
-        
       </div>
     </div>
 
     <!-- Right Section: Annotation + Stream Graph + Bar Chart -->
     <div class="right">
+      <!-- Timeline Annotations -->
       <section class="annotations" id="timeline-section">
         <h2 id="annotation-title">Timeline Annotations</h2>
         <div id="timeline-annotations"></div>
       </section>
 
+      <!-- Stream Graph -->
       <section class="streamgraph" id="streamgraph-container">
-          <h2 id="streamgraph-title">Select A Tract To See It's Attribute Timeline</h2>
+        <h2 id="streamgraph-title">Select A Tract To See Its Attribute Timeline</h2>
         <div id="legend-container"></div>
       </section>
 
+      <!-- Median Table -->
       <section class="barchart" id="med-table-container">
         <h2>Median Table</h2>
       </section>
     </div>
-</div>
-
-  <script src="https://d3js.org/d3.v5.min.js"></script>
-  <script src="https://unpkg.com/topojson@3"></script>
-  <script type="module" src="county.js"></script>
-
+  </div>
 </body>
+
 </html>

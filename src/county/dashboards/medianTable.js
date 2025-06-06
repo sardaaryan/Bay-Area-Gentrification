@@ -1,5 +1,6 @@
 // Given a current year and svg container from county.js, render the Median Table
 export function renderMedianTable(containerId, currentYearData) {
+  // Map from CSV variables to human-readable labels and units
   const unitsMap = {
   "Total Population": "People",
   "Median Home Value": "$",

@@ -1,18 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>California Counties Map</title>
 
-  <!-- Fonts and Styles -->
-  <!-- if the visualizations call for radically different fonts and styles than index.html, link a new stylesheet here! -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="./vis.css" />
 
   <!-- Scripts -->
   <script src="https://d3js.org/d3.v5.min.js"></script>
   <script src="https://unpkg.com/topojson@3"></script>
+  <script src="vis.js" defer></script>
 </head>
+
 <body>
   <!-- Map Description -->
   <div id="map-description">
@@ -21,14 +25,19 @@
     Click a county to view more details.
     <button id="back-to-intro" style="margin-top: 2em;">Back to Intro</button>
   </div>
+
   <!-- D3 Visualization Element -->
   <svg id="map" viewBox="0 0 960 600" preserveAspectRatio="xMidYMid meet"></svg>
+
+  <!-- Tooltip -->
   <div id="tooltip" style="opacity: 0;"></div>
-  <script src="vis.js"></script>
+
+  <!-- Back to Intro Button Script -->
   <script>
-    document.getElementById("back-to-intro").onclick = function() {
+    document.getElementById("back-to-intro").onclick = function () {
       window.location.href = "../index.html";
     };
   </script>
 </body>
+
 </html>
